@@ -119,19 +119,19 @@ const float recoil4b = 0.0000938;
 const float recoil5a = 0.0000313;
 const float recoil3b = 0.0001146;
 
-#include "Decorate/Ammo"
-#include "Decorate/Pistols"
-#include "Decorate/SMGs"
-#include "Decorate/Shotguns"
-#include "Decorate/ARs"
-#include "Decorate/Snipers"
-#include "Decorate/LMGs"
-#include "Decorate/Gear"
-#include "Decorate/Monsters"
+#include "Decorate/Ammo.txt"
+#include "Decorate/Pistols.txt"
+#include "Decorate/SMGs.txt"
+#include "Decorate/Shotguns.txt"
+#include "Decorate/ARs.txt"
+#include "Decorate/Snipers.txt"
+#include "Decorate/LMGs.txt"
+#include "Decorate/Gear.txt"
+#include "Decorate/Monsters.txt"
 //Uncomment the following line for more classic Doom zombies
 //#include "Decorate/ClassicZeds"
 //Uncomment the following line for more lethally equipped zombies
-#include "Decorate/Zombies"
+#include "Decorate/Zombies.txt"
 
 ACTOR R6_Loadout : CustomInventory
 {
