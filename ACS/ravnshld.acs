@@ -1,0 +1,388 @@
+#library "ravnshld"
+#include "zcommon.acs"
+#include "includes.acs"
+
+script "R6_SprintStart" (void) net
+{
+	if (CheckInventory("sprinting") == 0 && CheckInventory("R6_Stamina") > 105)
+		GiveInventory("sprinting", 1);
+}
+
+script "R6_SprintStop" (void) net
+{
+	TakeInventory("sprinting", 1);
+}
+
+script "PlayerUpdateR6W" ENTER
+{
+	while(true)
+	{
+	GiveInventory("inacc",map(GetVelocity(),0.0,19.0,0.0,200.0)>>16);
+	delay(1);
+	TakeInventory("inacc",1);
+	}
+}
+
+script "WoundUpdateR6W" ENTER
+{
+	int hp;
+	while(true)
+	{
+		hp = GetActorProperty(0,APROP_Health);
+		if (hp > 0 && hp < 100)
+		{
+			if (hp > 79 && random(79,98) < hp)
+				SetActorProperty(0,APROP_Health,++hp);
+			else if (hp < 40 && random(2,40) > hp)
+			{
+				if (hp == 1)
+					DamageThing(1);
+				else
+					SetActorProperty(0,APROP_Health,--hp);
+				Spawn("BloodDrop2",GetActorX(0)+random(-4.0,4.0),GetActorY(0)+random(-4.0,4.0),GetActorZ(0)+4.0);
+			}
+		}
+		delay(175);
+	}
+}
+
+script "LoadoutScript" (int wep1, int wep2)
+{
+	if (wep2 == 0) wep2 = random(1,12);
+	switch(wep2)
+	{
+	case 1:
+		GiveInventory("fs92_dropped", 1);
+		GiveInventory("Mag_92fs", 16);
+		GiveInventory("ammo_9mm", 45);
+		break;
+	case 2:
+		GiveInventory("aparmy_dropped", 1);
+		GiveInventory("Mag_aparmy", 21);
+		GiveInventory("ammo_5-7mm", 40);
+		break;
+	case 3:
+		GiveInventory("de357_dropped", 1);
+		GiveInventory("Mag_de357", 10);
+		GiveInventory("ammo_357", 27);
+		break;
+	case 4:
+		GiveInventory("de50_dropped", 1);
+		GiveInventory("Mag_de50", 8);
+		GiveInventory("ammo_50", 21);
+		break;
+	case 5:
+		GiveInventory("mk23_dropped", 1);
+		GiveInventory("Mag_mk23", 13);
+		GiveInventory("ammo_45", 36);
+		break;
+	case 6:
+		GiveInventory("p228_dropped", 1);
+		GiveInventory("Mag_p228", 14);
+		GiveInventory("ammo_9mm", 39);
+		break;
+	case 7:
+		GiveInventory("spp_dropped", 1);
+		GiveInventory("Mag_spp", 31);
+		GiveInventory("ammo_9mm", 30);
+		break;
+	case 8:
+		GiveInventory("usp_dropped", 1);
+		GiveInventory("Mag_usp", 14);
+		GiveInventory("ammo_40", 39);
+		break;
+	case 9:
+		GiveInventory("cz61_dropped", 1);
+		GiveInventory("Mag_cz61", 21);
+		GiveInventory("ammo_7-65mm", 80);
+		break;
+	case 10:
+		GiveInventory("mac11_dropped", 1);
+		GiveInventory("Mag_mac11", 33);
+		GiveInventory("ammo_9mm", 32);
+		break;
+	case 11:
+		GiveInventory("pUzi_dropped", 1);
+		GiveInventory("Mag_pUzi", 33);
+		GiveInventory("ammo_9mm", 32);
+		break;
+	case 12:
+		GiveInventory("sup57_dropped", 1);
+		GiveInventory("Mag_aparmy", 21);
+		GiveInventory("ammo_5-7mm", 40);
+	}
+	switch(wep1)//Random options
+	{
+	case 0:
+		wep1 = random(6,47);
+		break;
+	case 1:
+		wep1 = random(6,16);
+		break;
+	case 2:
+		wep1 = random(33,35);
+		break;
+	case 3:
+		wep1 = random(17,32);
+		break;
+	case 4:
+		wep1 = random(36,42);
+		break;
+	case 5:
+		wep1 = random(43,47);
+	}
+	switch(wep1)//Specific weapons
+	{
+	case 6:
+		GiveInventory("m12_dropped", 1);
+		GiveInventory("Mag_m12", 41);
+		GiveInventory("ammo_9mm", 160);
+		SetWeapon("m12");
+		break;
+	case 7:
+		GiveInventory("mp510a2_dropped", 1);
+		GiveInventory("Mag_mp510", 31);
+		GiveInventory("ammo_10mm", 180);
+		SetWeapon("mp510a2");
+		break;
+	case 8:
+		GiveInventory("mp5a4_dropped", 1);
+		GiveInventory("Mag_mp5", 31);
+		GiveInventory("ammo_9mm", 180);
+		SetWeapon("mp5a4");
+		break;
+	case 9:
+		GiveInventory("mp5k_dropped", 1);
+		GiveInventory("Mag_mp5k", 31);
+		GiveInventory("ammo_9mm", 180);
+		SetWeapon("mp5k");
+		break;
+	case 10:
+		GiveInventory("mp5sd_dropped", 1);
+		GiveInventory("Mag_mp5sd", 31);
+		GiveInventory("ammo_9mm", 180);
+		SetWeapon("mp5sd");
+		break;
+	case 11:
+		GiveInventory("mtar21_dropped", 1);
+		GiveInventory("Mag_mtar21", 31);
+		GiveInventory("ammo_9mm", 180);
+		SetWeapon("mtar21");
+		break;
+	case 12:
+		GiveInventory("p90_dropped", 1);
+		GiveInventory("Mag_p90", 51);
+		GiveInventory("ammo_5-7mm", 150);
+		SetWeapon("p90");
+		break;
+	case 13:
+		GiveInventory("sr2_dropped", 1);
+		GiveInventory("Mag_sr2", 21);
+		GiveInventory("ammo_9x21mm", 180);
+		SetWeapon("sr2");
+		break;
+	case 14:
+		GiveInventory("tmp_dropped", 1);
+		GiveInventory("Mag_tmp", 31);
+		GiveInventory("ammo_9mm", 180);
+		SetWeapon("tmp");
+		break;
+	case 15:
+		GiveInventory("ump45_dropped", 1);
+		GiveInventory("Mag_ump", 26);
+		GiveInventory("ammo_45", 125);
+		SetWeapon("ump45");
+		break;
+	case 16:
+		GiveInventory("uzi_dropped", 1);
+		GiveInventory("Mag_uzi", 33);
+		GiveInventory("ammo_9mm", 192);
+		SetWeapon("uzi");
+		break;
+	case 17:
+		GiveInventory("ak47_dropped", 1);
+		GiveInventory("Mag_ak47", 31);
+		GiveInventory("ammo_7-62mm", 150);
+		SetWeapon("ak47");
+		break;
+	case 18:
+		GiveInventory("ak74_dropped", 1);
+		GiveInventory("Mag_ak74", 31);
+		GiveInventory("ammo_5-45mm", 150);
+		SetWeapon("ak74");
+		break;
+	case 19:
+		GiveInventory("aug_dropped", 1);
+		GiveInventory("Mag_aug", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("aug");
+		break;
+	case 20:
+		GiveInventory("fal_dropped", 1);
+		GiveInventory("Mag_fal", 31);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("fal");
+		break;
+	case 21:
+		GiveInventory("famas_dropped", 1);
+		GiveInventory("Mag_famas", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("famas");
+		break;
+	case 22:
+		GiveInventory("fnc_dropped", 1);
+		GiveInventory("Mag_fnc", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("fnc");
+		break;
+	case 23:
+		GiveInventory("g36k_dropped", 1);
+		GiveInventory("Mag_g36k", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("g36k");
+		break;
+	case 24:
+		GiveInventory("g3a3_dropped", 1);
+		GiveInventory("Mag_g3a3", 21);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("g3a3");
+		break;
+	case 25:
+		GiveInventory("galil_dropped", 1);
+		GiveInventory("Mag_galil", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("galil");
+		break;
+	case 26:
+		GiveInventory("l85a1_dropped", 1);
+		GiveInventory("Mag_l85a1", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("l85a1");
+		break;
+	case 27:
+		GiveInventory("m14_dropped", 1);
+		GiveInventory("Mag_m14", 21);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("m14");
+		break;
+	case 28:
+		GiveInventory("m16a2_dropped", 1);
+		GiveInventory("Mag_m16", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("m16a2");
+		break;
+	case 29:
+		GiveInventory("m4_dropped", 1);
+		GiveInventory("Mag_m4", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("m4");
+		break;
+	case 30:
+		GiveInventory("m82_dropped", 1);
+		GiveInventory("Mag_m82", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("m82");
+		break;
+	case 31:
+		GiveInventory("tar21_dropped", 1);
+		GiveInventory("Mag_tar21", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("tar21");
+		break;
+	case 32:
+		GiveInventory("type97_dropped", 1);
+		GiveInventory("Mag_type97", 31);
+		GiveInventory("ammo_5-56mm", 150);
+		SetWeapon("type97");
+		break;
+	case 33:
+		GiveInventory("m1_dropped", 1);
+		GiveInventory("Mag_m1", 6);
+		GiveInventory("ammo_12ga", 17);
+		SetWeapon("m1");
+		break;
+	case 34:
+		GiveInventory("spas12_dropped", 1);
+		GiveInventory("Mag_spas12", 8);
+		GiveInventory("ammo_12ga", 16);
+		SetWeapon("spas12");
+		break;
+	case 35:
+		GiveInventory("usas12_dropped", 1);
+		GiveInventory("Mag_usas12", 21);
+		GiveInventory("ammo_12ga", 20);
+		SetWeapon("usas12");
+		break;
+	case 36:
+		GiveInventory("awcovert_dropped", 1);
+		GiveInventory("Mag_awcovert", 11);
+		GiveInventory("ammo_7-62mm", 20);
+		SetWeapon("awcovert");
+		break;
+	case 37:
+		GiveInventory("dragunov_dropped", 1);
+		GiveInventory("Mag_dragunov", 11);
+		GiveInventory("ammo_7-62mm", 20);
+		SetWeapon("dragunov");
+		break;
+	case 38:
+		GiveInventory("m82a1_dropped", 1);
+		GiveInventory("Mag_m82a1", 11);
+		GiveInventory("ammo_50", 20);
+		SetWeapon("m82a1");
+		break;
+	case 39:
+		GiveInventory("psg1_dropped", 1);
+		GiveInventory("Mag_psg1", 11);
+		GiveInventory("ammo_7-62mm", 20);
+		SetWeapon("psg1");
+		break;
+	case 40:
+		GiveInventory("ssg3000_dropped", 1);
+		GiveInventory("Mag_ssg3000", 6);
+		GiveInventory("ammo_7-62mm", 25);
+		SetWeapon("ssg3000");
+		break;
+	case 41:
+		GiveInventory("vintorez_dropped", 1);
+		GiveInventory("Mag_vintorez", 11);
+		GiveInventory("ammo_9mm", 20);
+		SetWeapon("vintorez");
+		break;
+	case 42:
+		GiveInventory("wa2000_dropped", 1);
+		GiveInventory("Mag_wa2000", 7);
+		GiveInventory("ammo_30", 24);
+		SetWeapon("wa2000");
+		break;
+	case 43:
+		GiveInventory("21e_dropped", 1);
+		GiveInventory("Mag_21e", 100);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("21e");
+		break;
+	case 44:
+		GiveInventory("23e_dropped", 1);
+		GiveInventory("Mag_23e", 200);
+		GiveInventory("ammo_5-56mm", 200);
+		SetWeapon("23e");
+		break;
+	case 45:
+		GiveInventory("m249_dropped", 1);
+		GiveInventory("Mag_m249", 200);
+		GiveInventory("ammo_5-56mm", 200);
+		SetWeapon("m249");
+		break;
+	case 46:
+		GiveInventory("m60e4_dropped", 1);
+		GiveInventory("Mag_m60e4", 100);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("m60e4");
+		break;
+	case 47:
+		GiveInventory("rpd_dropped", 1);
+		GiveInventory("Mag_rpd", 100);
+		GiveInventory("ammo_7-62mm", 100);
+		SetWeapon("rpd");
+	}
+}

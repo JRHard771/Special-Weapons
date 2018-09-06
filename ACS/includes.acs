@@ -1,0 +1,49 @@
+Function int GetVelocity (void)
+{
+	int vel;
+	int x = GetActorVelX(0);
+	int y = GetActorVelY(0);
+	int angle = VectorAngle(x, y);
+	if (((angle + 0.125) % 0.5) > 0.25)
+		vel = FixedDiv(y, Sin(angle));
+	else
+		vel = FixedDiv(x, Cos(angle));
+	return vel;
+}
+
+function int abs(int x)
+{
+	if (x < 0.0)
+		return -x;
+	return x;
+}
+
+function int min (int a, int b)
+{
+	if (a < b) return a;
+	return b;
+}
+
+function int max (int a, int b)
+{
+	if (a > b) return a;
+	return b;
+}
+
+Function int map(int a, int low, int high, int low2, int high2)
+{
+	int ratio = FixedDiv(a-low, high-low);
+	return FixedMul(ratio, high2-low2) + low2;
+}
+
+Function int logMap(int a, int low, int high, int low2, int high2)
+{
+	int linMap = map(a,low,high,low2,high2);
+	return map(a,low,high,linMap,high2);
+}
+
+Function int expMap(int a, int low, int high, int low2, int high2)
+{
+	int linMap = map(a,low,high,low2,high2);
+	return map(a,low,high,low2,linMap);
+}

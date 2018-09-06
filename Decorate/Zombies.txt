@@ -1,0 +1,1299 @@
+ACTOR R6ZombiemanSpawner : RandomSpawner replaces Zombieman
+{
+	DropItem "PistolZombie", 255, 6
+	DropItem "SMGZombie", 255, 3
+	DropItem "RifleZombie", 255, 2
+	DropItem "SniperZombie", 255, 1
+}
+
+ACTOR PistolZombie : RandomSpawner
+{
+	DropItem "FN57Man", 255, 4
+	DropItem "SPPMan", 255, 4
+	DropItem "P228Man", 255, 3
+	DropItem "FS92Man", 255, 3
+	DropItem "MK23Man", 255, 2
+	DropItem "USPMan", 255, 2
+	DropItem "DE357Man", 255, 1
+	DropItem "DE50Man", 255, 1
+	DropItem "Sup57Man", 255, 1
+}
+
+ACTOR PistolZTemplate : Zombieman
+{
+	+MISSILEEVENMORE
+	PainChance 255
+	Radius 16
+	Speed 12
+	Health 85
+	AttackSound "weapons/usp"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was gunned down by an undead sentry."
+	States
+	{
+	Spawn:
+		MGPS AB 10 A_Look
+		Loop
+	See:
+		MGPS AABBCCDD 4 A_Chase
+		Loop
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	Pain:
+		MGPS G 3
+		MGPS G 3 A_Pain
+		Goto See
+	Death:
+		MGPS H 5 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		MGPS V 5 A_Scream
+		MGPS W 5 A_NoBlocking
+		MGPS XY 5
+		MGPS Z -1
+		Stop
+	XDeath:
+		MGPS M 5
+		POSS N 5 A_XScream
+		POSS O 5 A_NoBlocking
+		POSS PQRST 5
+		POSS U -1
+		Stop
+	Raise:
+		MGPS YX 5
+		MGPS WVH 5
+		Goto See
+	}
+}
+
+ACTOR FN57Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "aparmy_pkup"
+	AttackSound "weapons/aparmy"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(13.0,6.5,1,random(14,113),"RSPuff",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR SPPMan : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "spp_pkup"
+	AttackSound "weapons/spp"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(15.8,7.9,1,random(15,114),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR P228Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "p228_pkup"
+	AttackSound "weapons/p228"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(13.6,6.8,1,random(17,116),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR FS92Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "fs92_pkup"
+	AttackSound "weapons/92fs"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(13.2,6.6,1,random(19,118),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MK23Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "mk23_pkup"
+	AttackSound "weapons/mk23"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(13.0,6.5,1,random(17,116),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR USPMan : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "usp_pkup"
+	AttackSound "weapons/usp"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(13.6,6.8,1,random(20,119),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR DE357Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "de357_pkup"
+	AttackSound "weapons/de357"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(12.6,6.3,1,random(34,133),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR DE50Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "de50_pkup"
+	AttackSound "weapons/de50"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(12.8,6.4,1,random(70,169),"RSPuff",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR Sup57Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "sup57_pkup"
+	AttackSound "silent/aparmy"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 A_CustomBulletAttack(11.4,5.7,1,random(7,106),"RSPuff",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR SMGZombie : RandomSpawner
+{
+	DropItem "CZ61Man", 255, 4
+	DropItem "MP5SDMan", 255, 4
+	DropItem "PUziMan", 255, 3
+	DropItem "MTarMan", 255, 3
+	DropItem "TMPMan", 255, 3
+	DropItem "MACMan", 255, 3
+	DropItem "P90Man", 255, 2
+	DropItem "MP5KMan", 255, 2
+	DropItem "SR2Man", 255, 2
+	DropItem "MP5A4Man", 255, 2
+	DropItem "UziMan", 255, 1
+	DropItem "M12Man", 255, 1
+	DropItem "UMPMan", 255, 1
+	DropItem "MP510Man", 255, 1
+}
+
+ACTOR ZombieTemplate : Zombieman
+{
+	+MISSILEMORE
+	PainChance 224
+	Radius 16
+	Speed 12
+	Health 85
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "RifleZedDrop"
+	AttackSound "weapons/m16a2"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was picked off by an undead soldier."
+	States
+	{
+	Spawn:
+		POSS AB 10 A_Look
+		Loop
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(43,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR CZ61Man : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "cz61_pkup"
+	AttackSound "weapons/cz61"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(15.8,7.9,1,random(6,105),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E 1
+		MGPS E 2 A_Jump(160,3)
+		MGPS E 2 A_Jump(160,2)
+		MGPS E 2 A_Jump(160,1)
+		MGPS E 0 A_Jump(13,"See")
+		MGPS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MP5SDMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "mp5sd_pkup"
+	AttackSound "weapons/mp5sd5"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(10.6,5.3,1,random(5,37),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR PUziMan : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "pUzi_pkup"
+	AttackSound "weapons/microuzi"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(16.2,8.1,1,random(14,113),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E 2 A_Jump(160,3)
+		MGPS E 2 A_Jump(160,2)
+		MGPS E 2 A_Jump(160,1)
+		MGPS E 0 A_Jump(13,"See")
+		MGPS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MACMan : PistolZTemplate
+{
+	DropItem "FragGrenAmmo", 32
+	DropItem "mac11_pkup"
+	AttackSound "weapons/mac11"
+	States
+	{
+	Missile:
+		MGPS E random(18,35) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(19.8,9.9,1,random(17,116),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E 2 A_Jump(160,3)
+		MGPS E 2 A_Jump(160,2)
+		MGPS E 2 A_Jump(160,1)
+		MGPS E 0 A_Jump(13,"See")
+		MGPS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR TMPMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "tmp_pkup"
+	AttackSound "weapons/spp"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(13.8,6.9,1,random(15,114),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MTarMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "mtar21_pkup"
+	AttackSound "weapons/mtar21"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(13.2,6.6,1,random(15,114),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR P90Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "p90_pkup"
+	AttackSound "weapons/p90"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(12.2,6.1,1,random(17,116),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MP5KMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "mp5k_pkup"
+	AttackSound "weapons/mp5k"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(15.4,7.7,1,random(18,117),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR SR2Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "sr2_pkup"
+	AttackSound "weapons/sr2"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(14.8,7.4,1,random(20,119),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MP5A4Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "mp5a4_pkup"
+	AttackSound "weapons/mp5a4"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.2,5.6,1,random(21,120),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR UziMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "uzi_pkup"
+	AttackSound "weapons/uzi"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(12.0,6.0,1,random(21,120),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M12Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m12_pkup"
+	AttackSound "weapons/m12"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(12.2,6.1,1,random(25,124),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR UMPMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ump45_pkup"
+	AttackSound "weapons/ump"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.4,5.7,1,random(26,125),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 2
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR MP510Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "mp510a2_pkup"
+	AttackSound "weapons/mp510a2"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.4,5.7,1,random(39,138),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(160,3)
+		POSS E 2 A_Jump(160,2)
+		POSS E 2 A_Jump(160,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR RifleZombie : RandomSpawner
+{
+	DropItem "TarMan", 255, 4
+	DropItem "TypeMan", 255, 4
+	DropItem "AK74Man", 255, 4
+	DropItem "M4Man", 255, 4
+	DropItem "G36KMan", 255, 3
+	DropItem "FamasMan", 255, 3
+	DropItem "M82Man", 255, 3
+	DropItem "AugMan", 255, 3
+	DropItem "L8Man", 255, 2
+	DropItem "GalilMan", 255, 2
+	DropItem "FncMan", 255, 2
+	DropItem "M16Man", 255, 2
+	DropItem "AK47Man", 255, 1
+	DropItem "G3A3Man", 255, 1
+	DropItem "FalMan", 255, 1
+	DropItem "M14Man", 255, 1
+}
+
+ACTOR TarMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "tar21_pkup"
+	AttackSound "weapons/tar21"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(8.6,4.3,1,random(52,151),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR TypeMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "type97_pkup"
+	AttackSound "weapons/type97"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.8,5.9,1,random(53,152),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR AK74Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ak74_pkup"
+	AttackSound "weapons/ak74"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(7.2,3.6,1,random(53,152),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M4Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m4_pkup"
+	AttackSound "weapons/m4"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(10.2,5.1,1,random(56,155),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR G36KMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "g36k_pkup"
+	AttackSound "weapons/g36k"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(8.2,4.1,1,random(56,155),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR FamasMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "famas_pkup"
+	AttackSound "weapons/famas"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(8.0,4.0,1,random(56,155),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M82Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m82_pkup"
+	AttackSound "weapons/m82"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(9.0,4.5,1,random(57,156),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR AugMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "aug_pkup"
+	AttackSound "weapons/aug"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(8.2,4.1,1,random(57,156),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR L8Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "l85a1_pkup"
+	AttackSound "weapons/l85a1"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(7.4,3.7,1,random(58,157),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR GalilMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "galil_pkup"
+	AttackSound "weapons/galil"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(5.8,2.9,1,random(60,159),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR FncMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "fnc_pkup"
+	AttackSound "weapons/fnc"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(5.6,2.8,1,random(62,161),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M16Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m16a2_pkup"
+	AttackSound "weapons/m16a2"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(5.2,2.6,1,random(66,165),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR AK47Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ak47_pkup"
+	AttackSound "weapons/ak47"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(8.8,4.4,1,random(80,179),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 2
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR G3A3Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "g3a3_pkup"
+	AttackSound "weapons/g3a3"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(7.0,3.5,1,random(87,186),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR FalMan : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "fal_pkup"
+	AttackSound "weapons/fal"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(5.2,2.6,1,random(99,198),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M14Man : ZombieTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m14_pkup"
+	AttackSound "weapons/m14"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(4.8,2.4,1,random(100,199),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(13,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR SniperZombie : RandomSpawner
+{
+	DropItem "AwcoMan", 255, 4
+	DropItem "VintMan", 255, 3
+	DropItem "SsgMan", 255, 3
+	DropItem "PsgMan", 255, 2
+	DropItem "DragMan", 255, 2
+	DropItem "Wa2Man", 255, 1
+	DropItem "M82A1Man", 255, 1
+}
+
+
+ACTOR AwcoMan : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "awcovert_pkup"
+	AttackSound "weapons/awcovert"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(3.4,1.7,1,random(20,119),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(44,114)
+		Goto Missile+1
+	}
+}
+
+ACTOR VintMan : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "vintorez_pkup"
+	AttackSound "weapons/vintorez"
+	States
+	{
+	Missile:
+		POSS E random(18,35) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(9.2,4.6,1,random(25,124),"RSPuffSm",0,CBAF_NORANDOM)
+		POSS E 1
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(26,"See")
+		POSS E 0 A_MonsterRefire(128,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR SsgMan : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ssg3000_pkup"
+	AttackSound "weapons/ssg3000"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(4.0,2.0,1,random(78,177),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(44,114)
+		Goto Missile+1
+	}
+}
+
+ACTOR PsgMan : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "psg1_pkup"
+	AttackSound "weapons/psg1"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(3.4,1.7,1,random(98,197),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(0,70)
+		Goto Missile+1
+	}
+}
+
+ACTOR DragMan : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "dragunov_pkup"
+	AttackSound "weapons/dragunov"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(3.4,1.7,1,random(100,199),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(0,70)
+		Goto Missile+1
+	}
+}
+
+ACTOR Wa2Man : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "wa2000_pkup"
+	AttackSound "weapons/wa2000"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(6.6,3.3,1,random(100,199),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(0,70)
+		Goto Missile+1
+	}
+}
+
+ACTOR M82A1Man : ZombieTemplate
+{
+	+ALWAYSFAST
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m82a1_pkup"
+	AttackSound "weapons/m82a1"
+	States
+	{
+	Missile:
+		POSS E random(35,70) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(2.2,1.1,1,random(100,199),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 4
+		POSS E 0 A_MonsterRefire(64,"See")
+		POSS E 0 A_Jump(43,"See")
+		POSS E random(31,101)
+		Goto Missile+1
+	}
+}
+
+ACTOR R6ShotgunGuySpawner : RandomSpawner replaces ShotgunGuy
+{
+	DropItem "M1Guy", 255, 9
+	DropItem "Spas12Guy", 255, 6
+	DropItem "Usas12Guy", 255, 4
+}
+
+ACTOR M1Guy : ShotgunGuy
+{
+	+MISSILEMORE
+	PainChance 192
+	Radius 16
+	Speed 12
+	Health 128
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m1_pkup"
+	AttackSound "weapons/m1"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was blasted open by an undead sergeant."
+	States
+	{
+	Spawn:
+		SPOS AB 10 A_Look
+		Loop
+	Missile:
+		SPOS E random(18,35) A_FaceTarget
+		SPOS E 0 A_FaceTarget(0,0,0,0,FAF_MIDDLE)
+		SPOS E 0 {angle += frandom(-10.4,10.4);}
+		SPOS F 2 BRIGHT A_CustomBulletAttack(3.0,3.0,8,random(13,112),"RSPuffSm",2048,CBAF_NORANDOM|CBAF_AIMFACING)
+		SPOS E random(16,33)
+		SPOS E 0 A_Jump(43,"See")
+		SPOS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR Spas12Guy : ShotgunGuy
+{
+	+MISSILEMORE
+	PainChance 192
+	Radius 16
+	Speed 12
+	Health 128
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "spas12_pkup"
+	AttackSound "weapons/spas12"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was blasted open by an undead sergeant."
+	States
+	{
+	Spawn:
+		SPOS AB 10 A_Look
+		Loop
+	Missile:
+		SPOS E random(18,35) A_FaceTarget
+		SPOS E 0 A_FaceTarget(0,0,0,0,FAF_MIDDLE)
+		SPOS E 0 {angle += frandom(-9.4,9.4);}
+		SPOS F 2 BRIGHT A_CustomBulletAttack(2.8,2.8,8,random(13,112),"RSPuffSm",2048,CBAF_NORANDOM|CBAF_AIMFACING)
+		SPOS E random(16,33)
+		SPOS E 0 A_Jump(32,"See")
+		SPOS E 0 A_MonsterRefire(64,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR Usas12Guy : ShotgunGuy
+{
+	+MISSILEMORE
+	PainChance 192
+	Radius 16
+	Speed 12
+	Health 128
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "usas12_pkup"
+	AttackSound "weapons/usas12"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was blasted open by an undead sergeant."
+	States
+	{
+	Spawn:
+		SPOS AB 10 A_Look
+		Loop
+	Missile:
+		SPOS E random(18,35) A_FaceTarget
+		SPOS E 0 A_FaceTarget(0,0,0,0,FAF_MIDDLE)
+		SPOS E 0 {angle += frandom(-8.2,8.2);}
+		SPOS F 2 BRIGHT A_CustomBulletAttack(3.3,3.3,8,random(13,112),"RSPuffSm",2048,CBAF_NORANDOM|CBAF_AIMFACING)
+		SPOS E 3
+		SPOS E 2 A_Jump(85,3)
+		SPOS E 2 A_Jump(85,2)
+		SPOS E 2 A_Jump(85,1)
+		SPOS E 0 A_Jump(13,"See")
+		SPOS E 0 A_MonsterRefire(96,"See")
+		goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6ChaingunGuySpawner : RandomSpawner replaces ChaingunGuy
+{
+	DropItem "M249Guy", 255, 3
+	DropItem "E23Guy", 255, 2
+	DropItem "RPDGuy", 255, 2
+	DropItem "E21Guy", 255, 1
+	DropItem "M60Guy", 255, 1
+}
+
+ACTOR LMGZTemplate : ChaingunGuy
+{
+	Health 299
+	PainChance 160
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ChainZedDrop"
+	AttackSound "weapons/de50"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was thoroughly perforated by an undead commando."
+	States
+	{
+	Spawn:
+		CPOS AB 10 A_Look
+		Loop
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 3 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR M249Guy : LMGZTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m249_pkup"
+	AttackSound "weapons/m249"
+	States
+	{
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 3 BRIGHT A_CustomBulletAttack(9.6,4.8,1,random(55,154),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR E23Guy : LMGZTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "23e_pkup"
+	AttackSound "weapons/23e"
+	States
+	{
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 3 BRIGHT A_CustomBulletAttack(11.0,5.5,1,random(60,159),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR RPDGuy : LMGZTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "rpd_pkup"
+	AttackSound "weapons/rpd"
+	States
+	{
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 3 BRIGHT A_CustomBulletAttack(11.8,5.9,1,random(77,176),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR E21Guy : LMGZTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "21e_pkup"
+	AttackSound "weapons/21e"
+	States
+	{
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 3 BRIGHT A_CustomBulletAttack(9.2,4.6,1,random(99,198),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR M60Guy : LMGZTemplate
+{
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "m60e4_pkup"
+	AttackSound "weapons/m60"
+	States
+	{
+	Missile:
+		CPOS E random(18,35) A_FaceTarget
+		CPOS FE 4 BRIGHT A_CustomBulletAttack(10.6,5.3,1,random(100,199),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	}
+}

@@ -1,0 +1,187 @@
+ACTOR R6_ZombieSpawner : RandomSpawner replaces Zombieman
+{
+	DropItem "R6Zombieman", 255, 1
+	DropItem "R6PistolZed", 255, 2
+}
+
+ACTOR RifleZedDrop : RandomSpawner
+{
+	DropItem "p90_pkup", 255, 3
+	DropItem "mp5a4_pkup", 255, 4
+	DropItem "m12_pkup", 255, 3
+	DropItem "ump45_pkup", 255, 3
+	DropItem "mp510a2_pkup", 255, 3
+	DropItem "type97_pkup", 255, 2
+	DropItem "ak74_pkup", 255, 2
+	DropItem "m4_pkup", 255, 2
+	DropItem "g36k_pkup", 255, 2
+	DropItem "famas_pkup", 255, 2
+	DropItem "m82_pkup", 255, 1
+	DropItem "aug_pkup", 255, 1
+	DropItem "l85a1_pkup", 255, 1
+	DropItem "galil_pkup", 255, 1
+	DropItem "fnc_pkup", 255, 1
+	DropItem "m16a2_pkup", 255, 1
+}
+
+ACTOR R6Zombieman : Zombieman
+{
+	+MISSILEMORE
+	PainChance 255
+	Speed 12
+	Health 128
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "RifleZedDrop"
+	AttackSound "weapons/m16a2"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was picked off by an undead soldier."
+	States
+	{
+	Missile:
+		POSS E random(9,18) A_FaceTarget
+		POSS F 2 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuff",0,CBAF_NORANDOM)
+		POSS E 2
+		POSS E 2 A_Jump(85,3)
+		POSS E 2 A_Jump(85,2)
+		POSS E 2 A_Jump(85,1)
+		POSS E 0 A_Jump(43,"See")
+		POSS E 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR PZedDrop : RandomSpawner
+{
+	DropItem "aparmy_pkup", 255, 2
+	DropItem "SPP_pkup", 255, 1
+	DropItem "P228_pkup", 255, 2
+	DropItem "FS92_pkup", 255, 1
+	DropItem "Mk23_pkup", 255, 2
+	DropItem "USP_pkup", 255, 1
+}
+
+ACTOR R6PistolZed : Zombieman
+{
+	+MISSILEEVENMORE
+	PainChance 255
+	Speed 12
+	Health 96
+	DropItem "FragGrenAmmo", 32
+	DropItem "PZedDrop"
+	AttackSound "weapons/usp"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was gunned down by an undead sentry."
+	States
+	{
+	Spawn:
+		MGPS AB 10 A_Look
+		Loop
+	See:
+		MGPS AABBCCDD 4 A_Chase
+		Loop
+	Missile:
+		MGPS E random(9,18) A_FaceTarget
+		MGPS F 2 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuffSm",0,CBAF_NORANDOM)
+		MGPS E random(4,21)
+		MGPS E 0 A_Jump(43,"See")
+		MGPS E 0 A_MonsterRefire(192,"See")
+		Goto Missile+1
+	Pain:
+		MGPS G 3
+		MGPS G 3 A_Pain
+		Goto See
+	Death:
+		MGPS H 5 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		MGPS V 5 A_Scream
+		MGPS W 5 A_NoBlocking
+		MGPS XY 5
+		MGPS Z -1
+		Stop
+	XDeath:
+		MGPS M 5
+		POSS N 5 A_XScream
+		POSS O 5 A_NoBlocking
+		POSS PQRST 5
+		POSS U -1
+		Stop
+	Raise:
+		MGPS YX 5
+		MGPS WVH 5
+		Goto See
+	}
+}
+
+ACTOR ShotZedDrop : RandomSpawner
+{
+	DropItem "m1_pkup", 255, 1
+	DropItem "spas12_pkup", 255, 1
+}
+
+ACTOR R6ShotgunGuy : ShotgunGuy
+{
+	+MISSILEMORE
+	PainChance 255
+	Speed 12
+	Health 192
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ShotZedDrop"
+	AttackSound "weapons/spas12"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was blasted open by an undead sergeant."
+	States
+	{
+	Missile:
+		SPOS E 18 A_FaceTarget
+		SPOS F 4 BRIGHT A_CustomBulletAttack(5.6,5.6,4,random(5,37),"RSPuffSm",2048,CBAF_NORANDOM)
+		SPOS E 8
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR ChainZedDrop : RandomSpawner
+{
+	DropItem "ak47_pkup", 255, 7
+	DropItem "g3a3_pkup", 255, 5
+	DropItem "fal_pkup", 255, 4
+	DropItem "m14_pkup", 255, 4
+	DropItem "m249_pkup", 255, 7
+	DropItem "23e_pkup", 255, 5
+	DropItem "rpd_pkup", 255, 4
+	DropItem "21e_pkup", 255, 3
+	DropItem "m60e4_pkup", 255, 1
+}
+
+ACTOR R6ChaingunGuy : ChaingunGuy replaces ChaingunGuy
+{
+	Health 448
+	PainChance 224
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "FragGrenAmmo", 32
+	DropItem "ChainZedDrop"
+	AttackSound "weapons/de50"
+	Species "Zombie"
+	Decal "BulletChip"
+	Obituary "%o was thoroughly perforated by an undead commando."
+	States
+	{
+	Missile:
+		CPOS E random(9,18) A_FaceTarget
+		CPOS FE 4 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuff",0,CBAF_NORANDOM)
+		CPOS F 0 A_MonsterRefire(85,"See")
+		Goto Missile+1
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}

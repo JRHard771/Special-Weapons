@@ -1,0 +1,93 @@
+generator	APArmy	BulletChip
+generator	SPP	BulletChip
+generator	P228	BulletChip
+generator	FS92	BulletChip
+generator	Mk23	BulletChip
+generator	USP	BulletChip
+generator	DE357	BulletChip
+generator	DE50	BulletChip
+generator	cz61	BulletChip
+generator	mp5sd	BulletChip
+generator	mac11	BulletChip
+generator	microUzi	BulletChip
+generator	p90	BulletChip
+generator	mtar21	BulletChip
+generator	mp5k	BulletChip
+generator	sr2	BulletChip
+generator	uzi	BulletChip
+generator	mp5a4	BulletChip
+generator	m12	BulletChip
+generator	ump45	BulletChip
+generator	tmp	BulletChip
+generator	mp510a2	BulletChip
+generator	m1	BulletChip
+generator	spas12	BulletChip
+generator	usas12	BulletChip
+generator	ak47	BulletChip
+generator	ak74	BulletChip
+generator	aug	BulletChip
+generator	fal	BulletChip
+generator	famas	BulletChip
+generator	fnc	BulletChip
+generator	g36k	BulletChip
+generator	g3a3	BulletChip
+generator	galil	BulletChip
+generator	l85a1	BulletChip
+generator	m14	BulletChip
+generator	m16a2	BulletChip
+generator	m4	BulletChip
+generator	m82	BulletChip
+generator	tar21	BulletChip
+generator	type97	BulletChip
+generator	awcovert	BulletChip
+generator	dragunov	BulletChip
+generator	m82a1	BulletChip
+generator	psg1	BulletChip
+generator	ssg3000	BulletChip
+generator	vintorez	BulletChip
+generator	wa2000	BulletChip
+generator	21e	BulletChip
+generator	23e	BulletChip
+generator	m249	BulletChip
+generator	m60e4	BulletChip
+generator	rpd	BulletChip
+
+decal BulletChip1
+{
+	pic CHIP1
+	translucent 0.85
+	shade "00 00 00"
+	x-scale 0.25
+	y-scale 0.25
+	randomflipx
+	randomflipy
+}
+
+decal BulletChip2
+{
+	pic CHIP2
+	translucent 0.85
+	shade "00 00 00"
+	x-scale 0.25
+	y-scale 0.25
+	randomflipx
+	randomflipy
+}
+
+decal BulletChip3
+{
+	pic CHIP3
+	translucent 0.85
+	shade "00 00 00"
+	x-scale 0.25
+	y-scale 0.25
+	randomflipx
+	randomflipy
+}
+
+decalgroup BulletChip
+{
+	BulletChip1	1
+	BulletChip2	1
+	BulletChip3	1
+}

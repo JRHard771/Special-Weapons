@@ -1,0 +1,4 @@
+ravnshld
+//movetilt - Replaced with advanced "limping" code in footstep.acs
+realaim
+footstep

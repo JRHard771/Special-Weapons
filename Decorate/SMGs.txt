@@ -1,0 +1,2381 @@
+ACTOR R6_SMG_Spawner : RandomSpawner replaces Chaingun
+{
+	DropItem "mp5sd_pkup", 255, 1
+	DropItem "tmp_pkup", 255, 1
+	DropItem "mtar21_pkup", 255, 1
+	DropItem "p90_pkup", 255, 1
+	DropItem "mp5k_pkup", 255, 1
+	DropItem "sr2_pkup", 255, 1
+	DropItem "uzi_pkup", 255, 1
+	DropItem "mp5a4_pkup", 255, 1
+	DropItem "m12_pkup", 255, 1
+	DropItem "ump45_pkup", 255, 1
+	DropItem "mp510a2_pkup", 255, 1
+}
+
+ACTOR hasSMG : Inventory { Inventory.MaxAmount 1 }
+ACTOR fm_SMG : Inventory { Inventory.MaxAmount 1 }
+ACTOR fm_pSMG : Inventory { Inventory.MaxAmount 1 }
+
+ACTOR Mag_cz61 : Ammo
+{
+	Inventory.MaxAmount 21
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 21
+}
+
+ACTOR cz61_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Skorpion CZ-61!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		SKOR B 26 NoDelay A_SpawnItemEx("ammo_7-65mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		SKOR B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 4)
+		TNT1 A 0 A_GiveInventory("cz61")
+		TNT1 A 0 A_GiveInventory("mag_cz61", 20)
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR cz61_dropped : cz61_pkup
+{
+	States
+	{
+	Spawn:
+		SKOR B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		SKOR B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 3)
+		TNT1 A 0 A_GiveInventory("cz61")
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR cz61 : RSWeapon
+{
+	const int rng = 6;//Range
+	const int dmg = 6;//Damage
+	const int acc = 79;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 15;//Stability (Inverse: 60% stability = 40)
+	const int rec = 86;//Recovery
+	const int mag = 20;//Magazine Size
+	
+	DropItem "cz61_pkup"
+	Weapon.SlotNumber 2
+	Weapon.SelectionOrder 6
+	Weapon.AmmoType2 "ammo_7-65mm"
+	Weapon.AmmoType1 "Mag_cz61"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Skorpion CZ-61!"
+	Tag "Skorpion CZ-61 7.65mm"
+	Obituary "%o was perforated by %k's Skorpion."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		SKOR B -1
+		Wait
+	Select:
+		TNT1 A 16 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		SKOR A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_cz61", 1, 2)
+		SKOR A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_cz61", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		SKOR A 0 A_PlaySound("weapons/cz61", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		SKOR AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_pSMG", 1, "Semi")
+		SKOR AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		SKOR AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_cz61", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_7-65mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_cz61") > 0)
+			{
+				A_GiveInventory("ammo_7-65mm", CountInv("Mag_cz61"));
+			}
+			A_TakeInventory("Mag_cz61",mag+1);
+			A_TakeInventory("cz61");
+			A_FireCustomMissile("cz61_dropped",0,false);
+			A_TakeInventory("fm_pSMG");
+			A_TakeInventory("hasPistol");
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_pSMG") == 1)
+				{A_TakeInventory("fm_pSMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_pSMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_7-65mm") < mag+1 - CountInv("Mag_cz61"))
+			{
+				A_GiveInventory("Mag_cz61", CountInv("ammo_7-65mm"));
+				A_TakeInventory("ammo_7-65mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_cz61") == 0)
+					{A_TakeInventory("ammo_7-65mm", mag - CountInv("Mag_cz61"));}
+				else
+					{A_TakeInventory("ammo_7-65mm", mag+1 - CountInv("Mag_cz61"));}
+				A_GiveInventory("Mag_cz61", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/cz61", CHAN_WEAPON)
+		RLOD A 72
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mp5sd : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR mp5sd_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5SD5!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MPSD B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MPSD B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("mp5sd")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_mp5sd", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5sd_dropped : mp5sd_pkup
+{
+	States
+	{
+	Spawn:
+		MPSD B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MPSD B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("mp5sd")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5sd : RSWeapon
+{
+	const int rng = 7;//Range
+	const int dmg = 8;//Damage
+	const int acc = 53;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 9;//Stability (Inverse: 60% stability = 40)
+	const int rec = 93;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "mp5sd_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_mp5sd"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5SD5!"
+	Tag "MP5SD5 9mm"
+	Obituary "%o was perforated by %k's MP5SD5."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MPSD B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MPSD A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5sd", 1, 2)
+		MPSD A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mp5sd", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MPSD A 0 A_PlaySound("weapons/mp5sd5", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters(192.0)
+		MPSD AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		MPSD AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MPSD AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5sd", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mp5sd") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_mp5sd"));
+			}
+			A_TakeInventory("Mag_mp5sd",mag+1);
+			A_TakeInventory("mp5sd");
+			A_FireCustomMissile("mp5sd_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_mp5sd"))
+			{
+				A_GiveInventory("Mag_mp5sd", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mp5sd") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_mp5sd"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_mp5sd"));}
+				A_GiveInventory("Mag_mp5sd", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mp5sd5", CHAN_WEAPON)
+		RLOD A 72
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mac11 : Ammo
+{
+	
+	Inventory.MaxAmount 33
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 33
+}
+
+ACTOR mac11_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MAC-11/9!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MAC1 B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MAC1 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 4)
+		TNT1 A 0 A_GiveInventory("mac11")
+		TNT1 A 0 A_GiveInventory("mag_mac11", 32)
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mac11_dropped : mac11_pkup
+{
+	States
+	{
+	Spawn:
+		MAC1 B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MAC1 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 3)
+		TNT1 A 0 A_GiveInventory("mac11")
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mac11 : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 17;//Damage
+	const int acc = 99;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 31;//Stability (Inverse: 60% stability = 40)
+	const int rec = 86;//Recovery
+	const int mag = 32;//Magazine Size
+	
+	DropItem "mac11_pkup"
+	Weapon.SlotNumber 2
+	Weapon.SelectionOrder 6
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_mac11"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MAC-11/9!"
+	Tag "MAC-11 9mm"
+	Obituary "%o was perforated by %k's MAC-11."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MAC1 B -1
+		Wait
+	Select:
+		TNT1 A 16 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MAC1 A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mac11", 1, 2)
+		MAC1 A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mac11", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MAC1 A 0 A_PlaySound("weapons/mac11", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MAC1 AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		MAC1 AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mac11", 33, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mac11") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_mac11"));
+			}
+			A_TakeInventory("Mag_mac11",mag+1);
+			A_TakeInventory("mac11");
+			A_FireCustomMissile("mac11_dropped",0,false);
+			A_TakeInventory("hasPistol");
+		}
+		wait
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_mac11"))
+			{
+				A_GiveInventory("Mag_mac11", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mac11") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_mac11"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_mac11"));}
+				A_GiveInventory("Mag_mac11", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mac11", CHAN_WEAPON)
+		RLOD A 76
+		Goto Ready
+	}
+}
+
+ACTOR Mag_pUzi : Ammo
+{
+	
+	Inventory.MaxAmount 33
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 33
+}
+
+ACTOR pUzi_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Micro-Uzi!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MUZI B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MUZI B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 4)
+		TNT1 A 0 A_GiveInventory("microUzi")
+		TNT1 A 0 A_GiveInventory("mag_pUzi", 32)
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR pUzi_dropped : pUzi_pkup
+{
+	States
+	{
+	Spawn:
+		MUZI B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MUZI B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("hasPistol", 1, 3)
+		TNT1 A 0 A_GiveInventory("microUzi")
+		TNT1 A 0 A_GiveInventory("hasPistol")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR microUzi : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 14;//Damage
+	const int acc = 81;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 41;//Stability (Inverse: 60% stability = 40)
+	const int rec = 86;//Recovery
+	const int mag = 32;//Magazine Size
+	
+	DropItem "pUzi_pkup"
+	Weapon.SlotNumber 2
+	Weapon.SelectionOrder 6
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_pUzi"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Micro-Uzi!"
+	Tag "Micro-Uzi 9mm"
+	Obituary "%o was perforated by %k's Micro-Uzi."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MUZI B -1
+		Wait
+	Select:
+		TNT1 A 16 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MUZI A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_pUzi", 1, 2)
+		MUZI A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_pUzi", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MUZI A 0 A_PlaySound("weapons/microuzi", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MUZI AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_pSMG", 1, "Semi")
+		MUZI AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MUZI AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_pUzi", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_pUzi") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_pUzi"));
+			}
+			A_TakeInventory("Mag_pUzi",mag+1);
+			A_TakeInventory("microUzi");
+			A_FireCustomMissile("pUzi_dropped",0,false);
+			A_TakeInventory("fm_pSMG");
+			A_TakeInventory("hasPistol");
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_pSMG") == 1)
+				{A_TakeInventory("fm_pSMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_pSMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_pUzi"))
+			{
+				A_GiveInventory("Mag_pUzi", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_pUzi") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_pUzi"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_pUzi"));}
+				A_GiveInventory("Mag_pUzi", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/microuzi", CHAN_WEAPON)
+		RLOD A 80
+		Goto Ready
+	}
+}
+
+ACTOR Mag_tmp : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR tmp_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Steyr TMP!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		TMPP B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		TMPP B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("tmp")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_tmp", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR tmp_dropped : tmp_pkup
+{
+	States
+	{
+	Spawn:
+		TMPP B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		TMPP B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("tmp")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR tmp : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 15;//Damage
+	const int acc = 69;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 25;//Stability (Inverse: 60% stability = 40)
+	const int rec = 99;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "tmp_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_tmp"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Steyr TMP!"
+	Tag "Steyr TMP 9mm"
+	Obituary "%o was perforated by %k's TMP."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		TMPP B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		TMPP A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_tmp", 1, 2)
+		TMPP A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_tmp", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		TMPP A 0 A_PlaySound("weapons/spp", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		TMPP AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		TMPP AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		TMPP AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_tmp", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_tmp") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_tmp"));
+			}
+			A_TakeInventory("Mag_tmp",mag+1);
+			A_TakeInventory("tmp");
+			A_FireCustomMissile("tmp_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_tmp"))
+			{
+				A_GiveInventory("Mag_tmp", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_tmp") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_tmp"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_tmp"));}
+				A_GiveInventory("Mag_tmp", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/tmp", CHAN_WEAPON)
+		RLOD A 67
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mtar21 : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR mtar21_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MTAR-21!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MTAR B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MTAR B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("mtar21")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_mtar21", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mtar21_dropped : mtar21_pkup
+{
+	States
+	{
+	Spawn:
+		MTAR B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MTAR B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("mtar21")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mtar21 : RSWeapon
+{
+	const int rng = 15;//Range
+	const int dmg = 15;//Damage
+	const int acc = 66;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 19;//Stability (Inverse: 60% stability = 40)
+	const int rec = 93;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "mtar21_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_mtar21"
+	
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MTAR-21!"
+	Tag "MTAR-21 9mm"
+	Obituary "%o was perforated by %k's MTAR-21."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MTAR B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MTAR A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mtar21", 1, 2)
+		MTAR A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mtar21", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MTAR A 0 A_PlaySound("weapons/mtar21", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MTAR AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		MTAR AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MTAR AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mtar21", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mtar21") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_mtar21"));
+			}
+			A_TakeInventory("Mag_mtar21",mag+1);
+			A_TakeInventory("mtar21");
+			A_FireCustomMissile("mtar21_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_mtar21"))
+			{
+				A_GiveInventory("Mag_mtar21", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mtar21") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_mtar21"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_mtar21"));}
+				A_GiveInventory("Mag_mtar21", 30);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mtar21", CHAN_WEAPON)
+		RLOD A 74
+		Goto Ready
+	}
+}
+
+ACTOR Mag_p90 : Ammo
+{
+	
+	Inventory.MaxAmount 51
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 51
+}
+
+ACTOR p90_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a P90!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		P90P B 26 NoDelay A_SpawnItemEx("ammo_5-7mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		P90P B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("p90")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_p90", 50)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR p90_dropped : p90_pkup
+{
+	States
+	{
+	Spawn:
+		P90P B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		P90P B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("p90")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR p90 : RSWeapon
+{
+	const int rng = 14;//Range
+	const int dmg = 17;//Damage
+	const int acc = 61;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 28;//Stability (Inverse: 60% stability = 40)
+	const int rec = 93;//Recovery
+	const int mag = 50;//Magazine Size
+	
+	DropItem "p90_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_5-7mm"
+	Weapon.AmmoType1 "Mag_p90"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a P90!"
+	Tag "P90 5.7mm"
+	Obituary "%o was perforated by %k's P90."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		P90P B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		P90P A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_p90", 1, 2)
+		P90P A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_p90", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuff",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		P90P A 0 A_PlaySound("weapons/p90", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		P90P AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		P90P AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		P90P AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_p90", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_5-7mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_p90") > 0)
+			{
+				A_GiveInventory("ammo_5-7mm", CountInv("Mag_p90"));
+			}
+			A_TakeInventory("Mag_p90", mag+1);
+			A_TakeInventory("p90");
+			A_FireCustomMissile("p90_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_5-7mm") < mag+1 - CountInv("Mag_p90"))
+			{
+				A_GiveInventory("Mag_p90", CountInv("ammo_5-7mm"));
+				A_TakeInventory("ammo_5-7mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_p90") == 0)
+					{A_TakeInventory("ammo_5-7mm", mag - CountInv("Mag_p90"));}
+				else
+					{A_TakeInventory("ammo_5-7mm", mag+1 - CountInv("Mag_p90"));}
+				A_GiveInventory("Mag_p90", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/p90", CHAN_WEAPON)
+		RLOD A 112
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mp5k : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR mp5k_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5K PDW!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP5K B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP5K B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("mp5k")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_mp5k", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5k_dropped : mp5k_pkup
+{
+	States
+	{
+	Spawn:
+		MP5K B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP5K B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("mp5k")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5k : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 18;//Damage
+	const int acc = 77;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 27;//Stability (Inverse: 60% stability = 40)
+	const int rec = 95;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "mp5k_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_mp5k"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5K PDW!"
+	Tag "MP5K PDW 9mm"
+	Obituary "%o was perforated by %k's MP5K PDW."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP5K B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MP5K A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5k", 1, 2)
+		MP5K A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mp5k", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MP5K A 0 A_PlaySound("weapons/mp5k", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MP5K AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		MP5K AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MP5K AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5k", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mp5k") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_mp5k"));
+			}
+			A_TakeInventory("Mag_mp5k",mag+1);
+			A_TakeInventory("mp5k");
+			A_FireCustomMissile("mp5k_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_mp5k"))
+			{
+				A_GiveInventory("Mag_mp5k", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mp5k") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_mp5k"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_mp5k"));}
+				A_GiveInventory("Mag_mp5k", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mp5k", CHAN_WEAPON)
+		RLOD A 61
+		Goto Ready
+	}
+}
+
+ACTOR Mag_sr2 : Ammo
+{
+	
+	Inventory.MaxAmount 21
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 21
+}
+
+ACTOR sr2_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a SR-2 Veresk!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		SR2S B 26 NoDelay A_SpawnItemEx("ammo_9x21mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		SR2S B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("sr2")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_sr2", 20)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR sr2_dropped : sr2_pkup
+{
+	States
+	{
+	Spawn:
+		SR2S B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		SR2S B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("sr2")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR sr2 : RSWeapon
+{
+	const int rng = 12;//Range
+	const int dmg = 20;//Damage
+	const int acc = 65;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 41;//Stability (Inverse: 60% stability = 40)
+	const int rec = 99;//Recovery
+	const int mag = 20;//Magazine Size
+	
+	DropItem "sr2_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9x21mm"
+	Weapon.AmmoType1 "Mag_sr2"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a SR-2 Veresk!"
+	Tag "SR-2 Veresk 9x21mm"
+	Obituary "%o was perforated by %k's SR-2 Veresk."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		SR2S B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		SR2S A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_sr2", 1, 2)
+		SR2S A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_sr2", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		SR2S A 0 A_PlaySound("weapons/sr2", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		SR2S AA 1 {A_SetPitch(pitch+stb*rec*recoil2a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		SR2S AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		SR2S AAAAAA 1 {A_SetPitch(pitch+stb*rec*recoil6b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_sr2", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9x21mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_sr2") > 0)
+			{
+				A_GiveInventory("ammo_9x21mm", CountInv("Mag_sr2"));
+			}
+			A_TakeInventory("Mag_sr2",mag+1);
+			A_TakeInventory("sr2");
+			A_FireCustomMissile("sr2_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9x21mm") < mag+1 - CountInv("Mag_sr2"))
+			{
+				A_GiveInventory("Mag_sr2", CountInv("ammo_9x21mm"));
+				A_TakeInventory("ammo_9x21mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_sr2") == 0)
+					{A_TakeInventory("ammo_9x21mm", mag - CountInv("Mag_sr2"));}
+				else
+					{A_TakeInventory("ammo_9x21mm", mag+1 - CountInv("Mag_sr2"));}
+				A_GiveInventory("Mag_sr2", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/sr2", CHAN_WEAPON)
+		RLOD A 80
+		Goto Ready
+	}
+}
+
+ACTOR Mag_uzi : Ammo
+{
+	
+	Inventory.MaxAmount 33
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 33
+}
+
+ACTOR uzi_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up an Uzi!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		UZI9 B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		UZI9 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("uzi")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_uzi", 32)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR uzi_dropped : uzi_pkup
+{
+	States
+	{
+	Spawn:
+		UZI9 B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		UZI9 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("uzi")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR uzi : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 21;//Damage
+	const int acc = 60;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 25;//Stability (Inverse: 60% stability = 40)
+	const int rec = 92;//Recovery
+	const int mag = 32;//Magazine Size
+	
+	DropItem "uzi_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_uzi"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up an Uzi!"
+	Tag "Uzi 9mm"
+	Obituary "%o was perforated by %k's Uzi."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		UZI9 B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		UZI9 A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_uzi", 1, 2)
+		UZI9 A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_uzi", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		UZI9 A 0 A_PlaySound("weapons/uzi", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		UZI9 AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		UZI9 AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		UZI9 AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_uzi", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_uzi") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_uzi"));
+			}
+			A_TakeInventory("Mag_uzi",mag+1);
+			A_TakeInventory("uzi");
+			A_FireCustomMissile("uzi_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_uzi"))
+			{
+				A_GiveInventory("Mag_uzi", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_uzi") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_uzi"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_uzi"));}
+				A_GiveInventory("Mag_uzi", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/uzi", CHAN_WEAPON)
+		RLOD A 74
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mp5 : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR mp5a4_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5 A4!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP5A B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP5A B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("mp5a4")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_mp5", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5a4_dropped : mp5a4_pkup
+{
+	States
+	{
+	Spawn:
+		MP5A B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP5A B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("mp5a4")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp5a4 : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 21;//Damage
+	const int acc = 56;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 25;//Stability (Inverse: 60% stability = 40)
+	const int rec = 95;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "mp5a4_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_mp5"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5 A4!"
+	Tag "MP5 A4 9mm"
+	Obituary "%o was perforated by %k's MP5 A4."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP5A B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MP5A A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5", 1, 2)
+		MP5A A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mp5", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MP5A A 0 A_PlaySound("weapons/mp5a4", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MP5A AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		MP5A AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MP5A AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp5", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mp5") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_mp5"));
+			}
+			A_TakeInventory("Mag_mp5",mag+1);
+			A_TakeInventory("mp5a4");
+			A_FireCustomMissile("mp5a4_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_mp5"))
+			{
+				A_GiveInventory("Mag_mp5", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mp5") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_mp5"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_mp5"));}
+				A_GiveInventory("Mag_mp5", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mp5a4", CHAN_WEAPON)
+		RLOD A 78
+		Goto Ready
+	}
+}
+
+ACTOR Mag_m12 : Ammo
+{
+	
+	Inventory.MaxAmount 41
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 41
+}
+
+ACTOR m12_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Beretta M12!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		M12S B 26 NoDelay A_SpawnItemEx("ammo_9mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		M12S B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("m12")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_m12", 40)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR m12_dropped : m12_pkup
+{
+	States
+	{
+	Spawn:
+		M12S B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		M12S B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("m12")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR m12 : RSWeapon
+{
+	const int rng = 11;//Range
+	const int dmg = 25;//Damage
+	const int acc = 61;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 30;//Stability (Inverse: 60% stability = 40)
+	const int rec = 93;//Recovery
+	const int mag = 40;//Magazine Size
+	
+	DropItem "m12_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_9mm"
+	Weapon.AmmoType1 "Mag_m12"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a Beretta M12!"
+	Tag "Beretta M12 9mm"
+	Obituary "%o was perforated by %k's Beretta M12."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		M12S B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		M12S A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_m12", 1, 2)
+		M12S A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_m12", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		M12S A 0 A_PlaySound("weapons/m12", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		M12S AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		M12S AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		M12S AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_m12", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_9mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_m12") > 0)
+			{
+				A_GiveInventory("ammo_9mm", CountInv("Mag_m12"));
+			}
+			A_TakeInventory("Mag_m12",mag+1);
+			A_TakeInventory("m12");
+			A_FireCustomMissile("m12_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_9mm") < mag+1 - CountInv("Mag_m12"))
+			{
+				A_GiveInventory("Mag_m12", CountInv("ammo_9mm"));
+				A_TakeInventory("ammo_9mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_m12") == 0)
+					{A_TakeInventory("ammo_9mm", mag - CountInv("Mag_m12"));}
+				else
+					{A_TakeInventory("ammo_9mm", mag+1 - CountInv("Mag_m12"));}
+				A_GiveInventory("Mag_m12", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/m12", CHAN_WEAPON)
+		RLOD A 74
+		Goto Ready
+	}
+}
+
+ACTOR Mag_ump : Ammo
+{
+	
+	Inventory.MaxAmount 26
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 26
+}
+
+ACTOR ump45_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up an UMP45!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		UMP4 B 26 NoDelay A_SpawnItemEx("ammo_45_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		UMP4 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("ump45")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_ump", 26)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR ump45_dropped : ump45_pkup
+{
+	States
+	{
+	Spawn:
+		UMP4 B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		UMP4 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("ump45")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR ump45 : RSWeapon
+{
+	const int rng = 10;//Range
+	const int dmg = 26;//Damage
+	const int acc = 57;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 34;//Stability (Inverse: 60% stability = 40)
+	const int rec = 96;//Recovery
+	const int mag = 25;//Magazine Size
+	
+	DropItem "ump45_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_45"
+	Weapon.AmmoType1 "Mag_ump"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up an UMP45!"
+	Tag "UMP .45"
+	Obituary "%o was perforated by %k's UMP45."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		UMP4 B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		UMP4 A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_ump", 1, 2)
+		UMP4 A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_ump", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		UMP4 A 0 A_PlaySound("weapons/ump", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		UMP4 AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		UMP4 AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		UMP4 AAAA 1 {A_SetPitch(pitch+stb*rec*recoil4b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_ump", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_45", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_ump") > 0)
+			{
+				A_GiveInventory("ammo_45", CountInv("Mag_ump"));
+			}
+			A_TakeInventory("Mag_ump",mag+1);
+			A_TakeInventory("ump45");
+			A_FireCustomMissile("ump45_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_45") < mag+1 - CountInv("Mag_ump"))
+			{
+				A_GiveInventory("Mag_ump", CountInv("ammo_45"));
+				A_TakeInventory("ammo_45", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_ump") == 0)
+					{A_TakeInventory("ammo_45", mag - CountInv("Mag_ump"));}
+				else
+					{A_TakeInventory("ammo_45", mag+1 - CountInv("Mag_ump"));}
+				A_GiveInventory("Mag_ump", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/ump", CHAN_WEAPON)
+		RLOD A 82
+		Goto Ready
+	}
+}
+
+ACTOR Mag_mp510 : Ammo
+{
+	
+	Inventory.MaxAmount 31
+	Ammo.BackpackAmount 0
+	Ammo.BackpackMaxAmount 31
+}
+
+ACTOR mp510a2_pkup : CustomInventory
+{
+	Speed 8
+	+NOBLOCKMAP
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5/10A2!"
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP10 B 26 NoDelay A_SpawnItemEx("ammo_10mm_pkup",0,0,0,velx,vely,velz)
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP10 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 7)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 6)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 5)
+		TNT1 A 0 A_GiveInventory("mp510a2")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("mag_mp510", 30)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp510a2_dropped : mp510a2_pkup
+{
+	States
+	{
+	Spawn:
+		MP10 B 52
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP", false)
+		MP10 B -1
+		Wait
+	Pickup:
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == farcry && CountInv("primaryWeapons") > 0, 6)
+		TNT1 A 0 A_JumpIf(GetCVar("R6_loadRule") == weight && (CountInv("primaryWeapons") > 1 || CountInv("heavyWeapons") > 0), 5)
+		TNT1 A 0 A_JumpIfInventory("hasSMG", 1, 4)
+		TNT1 A 0 A_GiveInventory("mp510a2")
+		TNT1 A 0 A_GiveInventory("primaryWeapons", 1)
+		TNT1 A 0 A_GiveInventory("hasSMG")
+		stop
+		TNT1 A 0
+		fail
+	}
+}
+
+ACTOR mp510a2 : RSWeapon
+{
+	const int rng = 10;//Range
+	const int dmg = 39;//Damage
+	const int acc = 57;//Accuracy (Inverse: 25% accuracy = 75)
+	const int stb = 56;//Stability (Inverse: 60% stability = 40)
+	const int rec = 94;//Recovery
+	const int mag = 30;//Magazine Size
+	
+	DropItem "mp510a2_pkup"
+	Weapon.SlotNumber 4
+	Weapon.SelectionOrder 5
+	Weapon.AmmoType2 "ammo_10mm"
+	Weapon.AmmoType1 "Mag_mp510"
+	+WEAPON.DONTBOB
+	Inventory.PickupSound "misc/pkupitem"
+	Inventory.PickupMessage "Picked up a MP5/10A2!"
+	Tag "MP5/10A2 10mm"
+	Obituary "%o was perforated by %k's MP5/10A2."
+	Scale 0.33
+	States
+	{
+	Spawn:
+		MP10 B -1
+		Wait
+	Select:
+		TNT1 A 23 A_PlaySound("misc/pkupsmg",0)
+		goto Ready
+	Deselect:
+		TNT1 A 8 A_PlaySound("weapons/switch",0)
+		TNT1 A 0 A_Lower
+		Wait
+	Ready:
+		MP10 A 1
+		{
+			A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1|WRF_ALLOWUSER2);
+			A_TakeInventory("inacc",rec/2);
+		}
+		Loop
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp510", 1, 2)
+		MP10 A 8 A_PlaySound("weapons/trigger")
+		Goto Ready
+		TNT1 A 0 A_TakeInventory("Mag_mp510", 1, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_FireBullets(acc*0.02+CountInv("inacc")*0.004,acc*0.02+CountInv("inacc")*0.004,-1,dmg+random(0,99),"RSPuffSm",FBF_NORANDOM,rng*256)
+		TNT1 A 0
+		{
+			angle += frandom(-1.0,1.0)*CountInv("inacc")*0.004;
+			pitch -= stb*0.05+CountInv("inacc")*0.001;
+			A_GiveInventory("inacc", stb);
+		}
+		MP10 A 0 A_PlaySound("weapons/mp510a2", CHAN_WEAPON)
+		TNT1 A 0 A_AlertMonsters
+		MP10 AAA 1 {A_SetPitch(pitch+stb*rec*recoil3a,SPF_INTERPOLATE);}
+		TNT1 A 0 A_JumpIfInventory("fm_SMG", 1, "Semi")
+		MP10 AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_ReFire;}
+		Goto Ready
+	Semi:
+		MP10 AAAAA 1 {A_SetPitch(pitch+stb*rec*recoil5b,SPF_INTERPOLATE); A_WeaponReady;}
+		Goto Ready
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Mag_mp510", mag+1, "Ready")
+		TNT1 A 0 A_JumpIfInventory("ammo_10mm", 1, "SwapMag")
+		Goto Ready
+	User1:
+		TNT1 A 0
+		{
+			A_PlaySound("misc/pkupammo");
+			if (CountInv("Mag_mp510") > 0)
+			{
+				A_GiveInventory("ammo_10mm", CountInv("Mag_mp510"));
+			}
+			A_TakeInventory("Mag_mp510",mag+1);
+			A_TakeInventory("mp510a2");
+			A_FireCustomMissile("mp510a2_dropped",0,false);
+			A_TakeInventory("fm_SMG");
+			A_TakeInventory("hasSMG");
+			A_TakeInventory("primaryWeapons", 1);
+		}
+		wait
+	User2:
+		"----" A 8
+		{
+			A_PlaySound("weapons/rof");
+			if (CountInv("fm_SMG") == 1)
+				{A_TakeInventory("fm_SMG");A_Log("Full Auto");}
+			else
+				{A_GiveInventory("fm_SMG");A_Log("Semi Auto");}
+		}
+		goto Ready
+	SwapMag:
+		TNT1 A 0
+		{
+			if (CountInv("ammo_10mm") < mag+1 - CountInv("Mag_mp510"))
+			{
+				A_GiveInventory("Mag_mp510", CountInv("ammo_10mm"));
+				A_TakeInventory("ammo_10mm", 999);
+			}
+			else
+			{
+				if (CountInv("Mag_mp510") == 0)
+					{A_TakeInventory("ammo_10mm", mag - CountInv("Mag_mp510"));}
+				else
+					{A_TakeInventory("ammo_10mm", mag+1 - CountInv("Mag_mp510"));}
+				A_GiveInventory("Mag_mp510", mag);
+			}
+		}
+		TNT1 A 0 A_PlaySound("reload/mp510a2", CHAN_WEAPON)
+		RLOD A 81
+		Goto Ready
+	}
+}

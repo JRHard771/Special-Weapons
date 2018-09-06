@@ -1,0 +1,81 @@
+#library "realaim"
+#include "zcommon.acs"
+#include "includes.acs"
+
+script "RealAimRuntime" ENTER
+{	int true_angle = GetActorAngle(0);
+	int true_pitch = GetActorPitch(0);
+	int angle;
+	int pitch;
+	int dx = 0;
+	int dy = 0;
+	while(true)
+	{
+		int cfg = GetCVar("cl_RealAim");
+		
+		angle = GetActorAngle(0);
+		pitch = GetActorPitch(0);
+		delay(1);
+		
+		if (cfg)
+		{
+			int new_angle = GetActorAngle(0);
+			int new_pitch = GetActorPitch(0);
+			true_angle += new_angle - angle;
+			true_pitch += new_pitch - pitch;
+			while (true_angle > 1.0) true_angle -= 1.0;
+			while (true_angle < 0.0) true_angle += 1.0;
+			if (true_pitch > 0.25) true_pitch = 0.25;
+			if (true_pitch < -0.25) true_pitch = -0.25;
+			int dx2;
+			if (angle < new_angle)
+			{
+				if (abs(new_angle - angle) < abs(new_angle - (angle + 1.0)))
+					dx2 = new_angle - angle;
+				else
+					dx2 = new_angle - (angle + 1.0);
+			}
+			else
+			{
+				if (abs(new_angle - angle) < abs(new_angle - angle + 1.0))
+					dx2 = new_angle - angle;
+				else
+					dx2 = new_angle - angle + 1.0;
+			}
+			int velx = GetActorVelX(0);
+			int vely = GetActorVelY(0);
+			int velz = GetActorVelZ(0);
+			int vel = FixedMul(velx, velx) + FixedMul(vely, vely) + FixedMul(velz, velz);
+			vel = FixedMul(FixedSqrt(vel), 0.001);
+			dx = FixedMul(dx + dx2, min(0.875 + vel, 0.99));
+			dy = FixedMul(dy + (new_pitch - pitch), min(0.825 + vel, 0.99));
+			int loopy = FixedMul((Timer() << 16), 0.01);
+			int loopy2 = FixedMul((Timer() << 16), 0.02);
+			int mx = FixedMul(sin(loopy), 0.00024 + vel + abs(dx)/15);
+			int my = FixedMul(sin(loopy2), 0.00048 + vel + abs(dy)/15);
+			dx += mx;
+			dy += my;
+			if (new_angle < true_angle)
+			{
+				if (abs(true_angle - new_angle) < abs(true_angle - (new_angle + 1.0)))
+					angle = ((new_angle + dx/15) + true_angle)/2;
+				else
+					angle = ((new_angle + dx/15) + (true_angle - 1.0))/2;
+			}
+			else
+			{
+				if (abs(true_angle - new_angle) < abs(true_angle - new_angle + 1.0))
+					angle = ((new_angle + dx/15) + true_angle)/2;
+				else
+					angle = ((new_angle + dx/15) + (true_angle + 1.0))/2;
+			}
+			pitch = ((new_pitch + dy/15) + true_pitch*2)/3;
+			while (angle > 1.0) angle -= 1.0;
+			while (angle < 0.0) angle += 1.0;
+			if (pitch > 0.25) pitch = 0.25;
+			if (pitch < -0.25) pitch = -0.25;
+			ChangeActorAngle(0, angle, true);
+			ChangeActorPitch(0, pitch, true);
+		}
+	}
+}

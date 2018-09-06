@@ -1,0 +1,533 @@
+Actor R6_RandomBullets : RandomSpawner replaces Clip
+{
+	DropItem "FragGrenAmmo", 255, 2
+	DropItem "ammo_40_pkup", 255
+	DropItem "ammo_7-65mm_pkup", 255
+	DropItem "ammo_9mm_pkup", 255
+	DropItem "ammo_9x21mm_pkup", 255
+	DropItem "ammo_10mm_pkup", 255
+	DropItem "ammo_45_pkup", 255
+	DropItem "ammo_5-7mm_pkup", 255
+	DropItem "ammo_357_pkup", 255
+	DropItem "ammo_5-45mm_pkup", 255
+	DropItem "ammo_5-56mm_pkup", 255
+	DropItem "ammo_7-62mm_pkup", 255
+	DropItem "ammo_30_pkup", 255
+	DropItem "ammo_50_pkup", 255
+}
+
+Actor R6_SMGBullets : RandomSpawner
+{
+	DropItem "ammo_40_pkup", 255
+	DropItem "ammo_7-65mm_pkup", 255
+	DropItem "ammo_9mm_pkup", 255
+	DropItem "ammo_9x21mm_pkup", 255
+	DropItem "ammo_10mm_pkup", 255
+	DropItem "ammo_45_pkup", 255
+	DropItem "ammo_5-7mm_pkup", 255
+	DropItem "ammo_357_pkup", 255
+	DropItem "ammo_50_pkup", 255
+}
+
+Actor R6_AssaultBullets : RandomSpawner replaces RocketAmmo
+{
+	DropItem "FragGrenAmmo", 255, 3
+	DropItem "ammo_5-56mm_pkup", 255, 2
+	DropItem "ammo_7-62mm_pkup", 255, 1
+}
+
+Actor R6_SniperBullets : RandomSpawner replaces Cell
+{
+	DropItem "SmokeGrenAmmo", 255
+	DropItem "ammo_9mm_pkup", 255
+	DropItem "ammo_7-62mm_pkup", 255
+	DropItem "ammo_30_pkup", 255
+	DropItem "ammo_50_pkup", 255
+}
+
+Actor R6_RareBullets : RandomSpawner replaces ClipBox
+{
+	DropItem "ammo_40_pkup", 255
+	DropItem "ammo_9x21mm_pkup", 255
+	DropItem "ammo_7-65mm_pkup", 255
+	DropItem "ammo_10mm_pkup", 255
+	DropItem "ammo_357_pkup", 255
+	DropItem "ammo_5-45mm_pkup", 255
+	DropItem "ammo_30_pkup", 255
+}
+
+Actor R6_LMGBullets : RandomSpawner replaces CellPack
+{
+	DropItem "ammo_5-56mm_pkup", 255, 4
+	DropItem "ammo_7-62mm_pkup", 255, 3
+}
+
+Actor R6_HeavyOrdnance : RandomSpawner replaces RocketBox
+{
+	DropItem "FragGrenAmmo", 255
+	DropItem "ammo_357_pkup", 255
+	DropItem "ammo_30_pkup", 255
+	DropItem "ammo_50_pkup", 255
+}
+
+Actor R6_ScatteredBullets : RandomSpawner replaces ArmorBonus
+{
+	DropItem "FragGrenAmmo", 85, 3
+	DropItem "SmokeGrenAmmo", 85, 1
+	DropItem "R6_RandomBullets", 85, 8
+}
+
+Actor ammo_40 : Ammo
+{
+	Inventory.Amount 13
+	Inventory.MaxAmount 39
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .40 ammo!"
+	Ammo.DropAmount 13
+	Ammo.BackPackAmount 26
+	Ammo.BackPackMaxAmount 78
+	Scale 0.2
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_40_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .40 ammo!"
+	Scale 0.2
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_40", random(6,20))
+		stop
+	}
+}
+
+Actor ammo_7-65mm : Ammo
+{
+	Inventory.Amount 20
+	Inventory.MaxAmount 180
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 7.65mm ammo!"
+	Ammo.DropAmount 20
+	Ammo.BackPackAmount 40
+	Ammo.BackPackMaxAmount 360
+	Scale 0.151
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_7-65mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 7.65mm ammo!"
+	Scale 0.151
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_7-65mm", random(10,30))
+		stop
+	}
+}
+
+Actor ammo_9mm : Ammo
+{
+	Inventory.Amount 27
+	Inventory.MaxAmount 192
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 9mm ammo!"
+	Ammo.DropAmount 27
+	Ammo.BackPackAmount 54
+	Ammo.BackPackMaxAmount 384
+	Scale 0.177
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_9mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 9mm ammo!"
+	Scale 0.177
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_9mm", random(11,35))
+		stop
+	}
+}
+
+Actor ammo_9x21mm : Ammo
+{
+	Inventory.Amount 20
+	Inventory.MaxAmount 180
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 9x21mm ammo!"
+	Ammo.DropAmount 20
+	Ammo.BackPackAmount 40
+	Ammo.BackPackMaxAmount 360
+	Scale 0.187
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_9x21mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 9x21mm ammo!"
+	Scale 0.187
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_9x21mm", random(10,30))
+		stop
+	}
+}
+
+Actor ammo_10mm : Ammo
+{
+	Inventory.Amount 30
+	Inventory.MaxAmount 180
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 10mm ammo!"
+	Ammo.DropAmount 30
+	Ammo.BackPackAmount 60
+	Ammo.BackPackMaxAmount 360
+	Scale 0.197
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_10mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 10mm ammo!"
+	Scale 0.197
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_10mm", random(15,45))
+		stop
+	}
+}
+
+Actor ammo_45 : Ammo
+{
+	Inventory.Amount 12
+	Inventory.MaxAmount 161
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .45 ammo!"
+	Ammo.DropAmount 12
+	Ammo.BackPackAmount 24
+	Ammo.BackPackMaxAmount 322
+	Scale 0.23
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_45_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .45 ammo!"
+	Scale 0.23
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_45", random(6,18))
+		stop
+	}
+}
+
+Actor ammo_5-7mm : Ammo
+{
+	Inventory.Amount 20
+	Inventory.MaxAmount 190
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.7mm ammo!"
+	Ammo.DropAmount 20
+	Ammo.BackPackAmount 40
+	Ammo.BackPackMaxAmount 380
+	Scale 0.112
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_5-7mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.7mm ammo!"
+	Scale 0.112
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_5-7mm", random(10,30))
+		stop
+	}
+}
+
+Actor ammo_357 : Ammo
+{
+	Inventory.Amount 9
+	Inventory.MaxAmount 27
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .357 ammo!"
+	Ammo.DropAmount 9
+	Ammo.BackPackAmount 18
+	Ammo.BackPackMaxAmount 54
+	Scale 0.179
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	}
+}
+
+Actor ammo_357_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .357 ammo!"
+	Scale 0.179
+	States
+	{
+	Spawn:
+		BULT A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_357", random(4,14))
+		stop
+	}
+}
+
+Actor ammo_5-45mm : Ammo
+{
+	Inventory.Amount 30
+	Inventory.MaxAmount 150
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.45mm ammo!"
+	Ammo.DropAmount 30
+	Ammo.BackPackAmount 60
+	Ammo.BackPackMaxAmount 300
+	Scale 0.107
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_5-45mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.45mm ammo!"
+	Scale 0.107
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_5-45mm", random(15,45))
+		stop
+	}
+}
+
+Actor ammo_5-56mm : Ammo
+{
+	Inventory.Amount 30
+	Inventory.MaxAmount 200
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.56mm ammo!"
+	Ammo.DropAmount 30
+	Ammo.BackPackAmount 60
+	Ammo.BackPackMaxAmount 400
+	Scale 0.109
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_5-56mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 5.56mm ammo!"
+	Scale 0.109
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_5-56mm", random(15,45))
+		stop
+	}
+}
+
+Actor ammo_7-62mm : Ammo
+{
+	Inventory.Amount 5
+	Inventory.MaxAmount 100
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 7.62mm ammo!"
+	Ammo.DropAmount 5
+	Ammo.BackPackAmount 10
+	Ammo.BackPackMaxAmount 200
+	Scale 0.15
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_7-62mm_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some 7.62mm ammo!"
+	Scale 0.15
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_7-62mm", random(8,24))
+		stop
+	}
+}
+
+Actor ammo_30 : Ammo
+{
+	Inventory.Amount 6
+	Inventory.MaxAmount 24
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .30 ammo!"
+	Ammo.DropAmount 6
+	Ammo.BackPackAmount 12
+	Ammo.BackPackMaxAmount 48
+	Scale 0.15
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_30_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .30 ammo!"
+	Scale 0.15
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_30", random(3,9))
+		stop
+	}
+}
+
+Actor ammo_50 : Ammo
+{
+	Inventory.Amount 7
+	Inventory.MaxAmount 41
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .50 ammo!"
+	Ammo.DropAmount 7
+	Ammo.BackPackAmount 14
+	Ammo.BackPackMaxAmount 82
+	Scale 0.25
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	}
+}
+
+Actor ammo_50_pkup : CustomInventory
+{
+	+FORCEXYBILLBOARD
+	Inventory.PickupSound "misc/pkupammo"
+	Inventory.PickupMessage "You found some .50 ammo!"
+	Scale 0.25
+	States
+	{
+	Spawn:
+		BUL2 A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_GiveInventory("ammo_50", random(4,14))
+		stop
+	}
+}

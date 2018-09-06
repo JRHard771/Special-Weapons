@@ -1,0 +1,68 @@
+gameinfo
+{
+	playerclasses = "R6_Operative"
+	weaponslot = 1,"R6_Unarmed"
+	weaponslot = 2,"fs92","aparmy","de357","de50","mk23","p228","spp","usp","cz61","mac11","microUzi"
+	weaponslot = 3,"m1","spas12","usas12"
+	weaponslot = 4,"m12","mp510a2","mp5a4","mp5k","mp5sd","mtar21","p90","sr2","tmp","ump45","uzi"
+	weaponslot = 5,"ak47","ak74","aug","fal","famas","fnc","g36k","galil","l85a1","m14","m16a2","m4","m82","tar21","type97"
+	weaponslot = 6,"awcovert","dragunov","m82a1","psg1","ssg3000","vintorez","wa2000"
+	weaponslot = 7,"21e","23e","m249","m60e4","rpd"
+}
+
+clearskills
+
+skill sk_trainee
+{
+	MonsterHealth = 0.5
+	HealthFactor = 2.0
+	EasyBossBrain
+	SpawnFilter = Easy
+	TextColor = lightblue
+	Name = "Trainee"
+}
+
+skill sk_private
+{
+	SpawnFilter = Normal
+	TextColor = lightblue
+	Name = "Private"
+}
+
+skill sk_corporal
+{
+	SpawnFilter = Hard
+	TextColor = lightblue
+	Name = "Corporal"
+	DefaultSkill
+}
+
+skill sk_sergeant
+{
+	FastMonsters
+	SpawnFilter = Hard
+	TextColor = lightblue
+	Name = "Sergeant"
+}
+
+skill sk_longdead
+{
+	SpawnFilter = Easy
+	ReplaceActor = "Zombieman", "LongdeadSpawner"
+	ReplaceActor = "ShotgunGuy", "LongdeadSpawner"
+	ReplaceActor = "ChaingunGuy", "LongdeadSpawner"
+	ReplaceActor = "DoomImp", "LongdeadSpawner"
+	ReplaceActor = "Revenant", "LongdeadSpawner"
+	ReplaceActor = "Demon", "LongdeadSpawner"
+	ReplaceActor = "Spectre", "LongdeadSpawner"
+	ReplaceActor = "HellKnight", "LongdeadSpawner"
+	ReplaceActor = "BaronOfHell", "LongdeadSpawner"
+	ReplaceActor = "Arachnotron", "LongdeadSpawner"
+	ReplaceActor = "Fatso", "LongdeadSpawner"
+	ReplaceActor = "Cacodemon", "nothing"
+	ReplaceActor = "PainElemental", "nothing"
+	ReplaceActor = "LostSoul", "nothing"
+	Name = "Rise of the Longdead"
+	TextColor = brick
+	MustConfirm = "Dark Doom & Flashlight mod recommended for proper survival/horror atmosphere. Continue?"
+}

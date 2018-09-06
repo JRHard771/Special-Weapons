@@ -1,0 +1,94 @@
+/*
+ * GZDoom Movement Camera Tilting
+ * Copyright (C) 2016 Nash Muhandes
+ */
+
+#library "movetilt"
+#include "zcommon.acs"
+#include "includes.acs"
+
+// get velocity
+function int GetVelocity(void)
+{
+	return VectorLength(GetActorVelX(0), GetActorVelY(0));
+}
+
+// Velocity multiplier - Default 0.06
+// How much the player's moving speed influences the rolling speed
+#define VELOCITY_MULT 0.06
+
+// Roll speed - Default 0.027
+// How fast the camera rolls.
+// Smaller numbers reduce the camera roll speed.
+#define ROLLSPEED 0.042
+
+// Maximum angle to roll - Default 0.005
+// How far from center should the camera roll.
+// Smaller numbers reduce the maximum roll amount.
+#define MAXROLLANGLE 0.005
+
+script "Script_MovementTilt" ENTER
+{
+	while(1)
+	{
+		int a, r, v, c;
+		int cfgOld;
+		int cfg = GetCVar("cl_MoveTilt");
+		int deathRoll;
+		int hp = GetActorProperty(0,APROP_Health);
+
+		if (cfg)
+		{		
+			// get player's velocity
+			v = FixedMul(GetVelocity(), VELOCITY_MULT);
+			
+			//SidDoyle: increase the roll while crouched
+			c = FixedDiv(41.0,GetActorViewHeight(ActivatorTID()));
+			
+			//SidDoyle: also increase roll while damaged
+			int wound;
+			if (hp >= 100)
+				wound = 0;
+			else
+				wound = (100-hp);
+			int phase = abs(sin((Timer()%52)*0.01923077));
+			int limp = 1.0+(FixedMul(phase,wound*0.02));
+			c = FixedMul(c, limp);
+
+			// increment angle
+			a += ROLLSPEED;
+
+			// clamp angle
+			if (a >= 1.0 || a < 0.0)
+			{
+				a = 0;
+			}
+
+			// calculate roll
+			if (hp > 0)
+			{
+				deathRoll = random(-0.375,0.375);
+				r = sin(a);
+				r = FixedMul(r, FixedMul(MAXROLLANGLE, c));
+				r = FixedMul(r, FixedMul(v, c));
+			}
+			else
+				r = FixedMul(r*9+deathRoll,0.1);
+
+			// roll
+			ChangeActorRoll(0, r, TRUE);
+		}
+
+		// detect changes in the cvar to reset the tilt
+		if (cfgOld != cfg)
+		{
+			cfgOld = cfg;
+			if (!cfg)
+			{
+				ChangeActorRoll(0, 0, TRUE);
+			}
+		}
+
+		Delay(1);
+	}
+}

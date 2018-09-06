@@ -1,0 +1,84 @@
+//movetilt.acs stuff - now affects modified footstep.acs
+user bool cl_MoveTilt = true;
+
+//Might as well mimic Nash's approach
+user bool cl_RealAim = true;
+
+user int r6_primary = 0;
+// Primary Weapons
+// 0 - random
+// 1 - random submachinegun
+// 2 - random shotgun
+// 3 - random assault rifle
+// 4 - random sniper rifle
+// 5 - random light machinegun
+// 6 - cz61
+// 7 - m12
+// 8 - mac11
+// 9 - microUzi
+// 10 - mp510a2
+// 11 - mp5a4
+// 12 - mp5k
+// 13 - mp5sd
+// 14 - mtar21
+// 15 - p90
+// 16 - sr2
+// 17 - tmp
+// 18 - ump45
+// 19 - uzi
+// 20 - ak47
+// 21 - ak74
+// 22 - aug
+// 23 - fal
+// 24 - famas
+// 25 - fnc
+// 26 - g36k
+// 27 - g3a3
+// 28 - galil
+// 29 - l85a1
+// 30 - m14
+// 31 - m16a2
+// 32 - m4
+// 33 - m82
+// 34 - tar21
+// 35 - type97
+// 36 - m1
+// 37 - spas12
+// 38 - usas12
+// 39 - awcovert
+// 40 - dragunov
+// 41 - m82a1
+// 42 - psg1
+// 43 - ssg3000
+// 44 - vintorez
+// 45 - wa2000
+// 46 - 21e
+// 47 - 23e
+// 48 - m249
+// 49 - m60e4
+// 50 - rpd
+
+user int r6_secondary = 0;
+// Secondary Weapons
+// 0 - random pistol
+// 1 - fs92
+// 2 - aparmy
+// 3 - de357
+// 4 - de50
+// 5 - mk23
+// 6 - p228
+// 7 - spp
+// 8 - usp
+
+server int r6_loadRule = 0;
+// Loadout Rules
+// 0 - One of each
+// 1 - Farcry 2
+// 2 - One sidearm, Two primaries/One heavy weapon
+
+// Footsteps V3
+// CVar Info
+user float cl_step_volmul = 1.0;
+user float cl_step_delaymul = 1.0;
+user noarchive int strtoval = 0;
+user noarchive float strtofloat = 0.0;

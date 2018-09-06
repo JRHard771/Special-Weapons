@@ -1,0 +1,547 @@
+ACTOR R6Cybie : Cyberdemon replaces Cyberdemon
+{
+	Speed 24
+	Health 17067
+}
+
+ACTOR R6CybRocket : Rocket replaces Rocket
+{
+	Damage(512)
+	States
+	{
+	Death:
+		MISL B 1 Bright A_Explode(256,63)
+		MISL B 1 Bright A_Explode(128,90)
+		MISL B 5 Bright A_Explode(64,128)
+		MISL C 5 Bright
+		MISL D 3 Bright
+		Stop
+	}
+}
+
+ACTOR R6Spidey : SpiderMastermind replaces SpiderMastermind
+{
+	Speed 18
+	DropItem "R6_RandomBullets", 255, 10
+	Health 12800
+	AttackSound "weapons/m82a1"
+	States
+	{
+	Missile:
+		SPID A 20 BRIGHT A_FaceTarget
+		SPID GH 4 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,104),"RSPuff",0,CBAF_NORANDOM)
+		SPID H 0 BRIGHT A_MonsterRefire(85,"See")
+		Goto Missile+1
+	}
+}
+
+ACTOR R6DoomImp : DoomImp replaces DoomImp
+{
+	PainChance 224
+	Radius 16
+	Speed 12
+	Health 256
+	States
+	{
+	Spawn:
+		TROO AB 10 A_Look
+		Loop
+	Melee:
+	Missile:
+		TROO EF 8 A_FaceTarget
+		TROO G 6 A_CustomComboAttack("R6ImpBall", 32, random(5,104), "imp/melee")
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6ImpBall : DoomImpBall replaces DoomImpBall
+{
+	Damage (random(5,104))
+}
+
+ACTOR R6Demon : Demon replaces Demon
+{
+	Speed 15
+	Health 640
+	States
+	{
+	Spawn:
+		SARG AB 10 A_Look
+		Loop
+	See:
+		SARG AABBCCDD 2 A_Chase
+		Loop
+	Melee:
+		SARG EF 6 A_FaceTarget
+		SARG G 6 A_CustomMeleeAttack(random(100,199))
+		Goto See
+	Pain:
+		SARG H 2
+		SARG H 2 A_Pain
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	Raise:
+		SARG N 5
+		SARG MLKJI 5
+		Goto See
+	}
+}
+
+ACTOR R6Spectre : R6Demon replaces Spectre
+{
+	+SHADOW
+	RenderStyle "OptFuzzy"
+	Alpha 0.5
+	SeeSound "spectre/sight"
+	AttackSound "spectre/melee"
+	PainSound "spectre/pain"
+	DeathSound "spectre/death"
+	ActiveSound "spectre/active"
+	HitObituary "$OB_SPECTREHIT"
+}
+
+ACTOR R6Caco : Cacodemon replaces Cacodemon
+{
+	Speed 12
+	Health 1707
+	States
+	{
+	Pain:
+		HEAD E 3 A_SpawnItemEx("CacoMeat",frandom(-8.0,8.0),frandom(-8.0,8.0),frandom(-8.0,8.0)+48,frandom(-2.0,2.0),frandom(-2.0,2.0),frandom(-1.0,3.0))
+		HEAD E 3 A_Pain
+		HEAD F 6
+		Goto See
+	Missile:
+		HEAD B 8 A_FaceTarget
+		HEAD C 4 A_FaceTarget
+		HEAD D 3 BRIGHT A_CustomComboAttack("R6CacoBall", 32, random(10,109), "imp/melee")
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6CacoBall : CacodemonBall replaces CacodemonBall
+{
+	Damage (random(10,109))
+}
+
+ACTOR CacoMeat
+{
+	+NOBLOCKMAP
+	+THRUACTORS
+	+FORCEXYBILLBOARD
+	+BOUNCEONFLOORS
+	Friction 1.0
+	Gravity 0.665
+	States
+	{
+	Spawn:
+		CACB A random(1,6)
+		CACB BCD 3
+		stop
+	}
+}
+
+ACTOR R6Painel : PainElemental replaces PainElemental
+{
+	Speed 12
+	Health 1707
+	States
+	{
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6Soul : LostSoul replaces LostSoul
+{
+	Health 427
+	Damage (random(5,34))
+	States
+	{
+	See:
+		SKUL AAABBB 2 BRIGHT A_Chase
+		Loop
+	}
+}
+
+ACTOR R6Tron : Arachnotron replaces Arachnotron
+{
+	Speed 18
+	Health 2133
+	States
+	{
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6Plasma : ArachnotronPlasma replaces ArachnotronPlasma
+{
+	Damage (random(15,114))
+}
+
+ACTOR LongdeadSpawner
+{
+	Radius 16
+	Height 56
+	-SOLID
+	+NODAMAGE
+	+NODAMAGETHRUST
+	var int user_lives;
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay {user_lives = random(1,3);}
+		goto Idle
+	Idle:
+		TNT1 A 0
+		{
+			if (A_SpawnItemEx("R6Longdead",frandom(-128.0,128.0),frandom(-128.0,128.0),0,0,0,0,frandom(-45,45.0),0,171))
+			{
+				user_lives--;
+				if (user_lives == 0)
+					{return state("Cease");}
+			}
+			return state(0);
+		}
+		TNT1 A random(350,1050)
+		TNT1 A 0 A_CheckProximity("BreakLOS","DoomPlayer",256.0,1,CPXF_ANCESTOR|CPXF_NOZ)
+		TNT1 A 0 A_CheckSight("BreakLOS")
+		goto Idle
+	BreakLOS:
+		TNT1 A 10
+		TNT1 A 0 A_CheckProximity("BreakLOS","DoomPlayer",256.0,1,CPXF_ANCESTOR|CPXF_NOZ)
+		TNT1 A 0 A_CheckSight("BreakLOS")
+		goto Idle
+	Cease:
+		TNT1 A 0
+		Stop
+	}
+}
+
+ACTOR R6Longdead : Revenant
+{
+	Health 1920
+	Radius 16
+	Height 56
+	Mass 100
+	Speed 16
+	PainChance 52
+	Monster
+	MeleeThreshold 192
+	MeleeRange 64
+	SeeSound ""
+	AttackSound ""
+	PainSound ""
+	ActiveSound "grunt/active"
+	+FLOORCLIP
+	Scale 0.665
+	HitObituary "%o fell victim to the Longdead."
+	States
+	{
+	Spawn:
+		ZKEL A 0 NoDelay A_Jump(171,"SpawnDead")
+	Idle:
+		ZKEL A 4
+		{
+			speed=12;
+			A_Wander(CHF_NORANDOMTURN|CHF_STOPIFBLOCKED);
+			A_LookEx(0,0,128.0,1024.0,135.0);
+		}
+		ZKEL B 6
+		{
+			speed=6;
+			A_Wander(CHF_NORANDOMTURN|CHF_STOPIFBLOCKED);
+			A_LookEx(0,0,256.0,1024.0,135.0);
+		}
+		ZKEL C 8
+		{
+			speed=3;
+			A_Wander;
+			A_LookEx(0,0,384.0,1024.0,135.0);
+		}
+		ZKEL D 4
+		{
+			speed=12;
+			A_Wander(CHF_NORANDOMTURN|CHF_STOPIFBLOCKED);
+			A_LookEx(0,0,128.0,1024.0,135.0);
+		}
+		ZKEL E 6
+		{
+			speed=6;
+			A_Wander(CHF_NORANDOMTURN|CHF_STOPIFBLOCKED);
+			A_LookEx(0,0,256.0,1024.0,135.0);
+		}
+		ZKEL F 8
+		{
+			speed=3;
+			A_Wander;
+			A_LookEx(0,0,384.0,1024.0,135.0);
+		}
+		Loop
+	SpawnDead:
+		ZKEL A 0 {speed = 64;}
+		ZKEL AAA 0 A_Wander
+		ZKEL A 0 {speed = 12; A_UnsetShootable; A_UnsetSolid;}
+		goto Faking
+	PlayDead:
+		ZKEL LM 7
+		ZKEL N 7 A_Scream
+		ZKEL O 7 {A_UnsetShootable;A_UnsetSolid;}
+		ZKEL P 7
+		goto Faking
+	Faking:
+		ZKEL Q 10 A_LookEx(LOF_NOSEESOUND,0.0,96.0,1024.0,360.0,"FakeRise")
+		Loop
+	FakeRise:
+		ZKEL P 5 {A_ChangeFlag("INVINCIBLE",false);A_PlaySound("vile/raise");}
+		ZKEL O 5 {A_SetShootable;A_SetSolid;}
+		ZKEL NML 5
+	See:
+		ZKEL AB random(1,4) A_Chase("Melee","",CHF_RESURRECT*randompick(0,0,0,1))
+		ZKEL B 0 {speed = 10;}
+		ZKEL B 0 A_Jump(224,2)
+		ZKEL B 0 A_CheckSight("Shadow")
+		ZKEL BC random(2,5) A_Chase("Melee","",CHF_STOPIFBLOCKED|CHF_NORANDOMTURN|(CHF_RESURRECT*randompick(0,0,0,1)))
+		ZKEL C 0 {speed = 5;}
+		ZKEL B 0 A_Jump(224,2)
+		ZKEL C 0 A_CheckSight("Shadow")
+		ZKEL CD random(3,6) A_Chase("Melee","",CHF_STOPIFBLOCKED|CHF_NORANDOMTURN|(CHF_RESURRECT*randompick(0,0,0,1)))
+		ZKEL D 0 {speed = 20;}
+		ZKEL B 0 A_Jump(224,2)
+		ZKEL D 0 A_CheckSight("Shadow")
+		ZKEL DE random(1,4) A_Chase("Melee","",CHF_RESURRECT*randompick(0,0,0,1))
+		ZKEL E 0 {speed = 10;}
+		ZKEL B 0 A_Jump(224,2)
+		ZKEL E 0 A_CheckSight("Shadow")
+		ZKEL EF random(2,5) A_Chase("Melee","",CHF_STOPIFBLOCKED|CHF_NORANDOMTURN|(CHF_RESURRECT*randompick(0,0,0,1)))
+		ZKEL F 0 {speed = 5;}
+		ZKEL B 0 A_Jump(224,2)
+		ZKEL F 0 A_CheckSight("Shadow")
+		ZKEL FA random(3,6) A_Chase("Melee","",CHF_STOPIFBLOCKED|CHF_NORANDOMTURN|(CHF_RESURRECT*randompick(0,0,0,1)))
+		ZKEL A 0 {speed = 20;}
+		ZKEL B 0 A_Jump(224,"See")
+		ZKEL A 0 A_CheckSight("Shadow")
+		Loop
+	Shadow:
+		"####" "#" 0 A_SpawnItemEx("LDeadImage",0,0,0,velx,vely,velz,angle,SXF_TRANSFERSPRITEFRAME)
+		TNT1 A 0 {A_UnsetShootable;A_UnsetSolid;alpha=0.0;}
+	Haunt:
+		TNT1 A random(35,175) A_LookEx(LOF_NOSEESOUND|LOF_NOJUMP,0,0,0,360.0)
+		TNT1 A 0 A_SetSolid
+		TNT1 A 0 A_Warp(AAPTR_TARGET,frandom(-384.0,-33.0),frandom(-384.0,384.0),0.0,0.0,WARPF_STOP|WARPF_TOFLOOR)
+		TNT1 A 0 A_UnsetSolid
+		TNT1 A 0 A_PlaySound("grunt/active",0,frandom(0.335,0.665),false,2.0)
+		TNT1 A 0 A_Jump(143,"Haunt")
+		ZKEL EDCBAFEDCB 3 {A_FaceTarget;A_FadeIn(0.1);}
+		ZKEL A 18 {A_SetShootable;A_SetSolid;}
+		Goto See
+	Melee:
+		ZKEL G 0 A_FaceTarget
+		ZKEL G 5
+		ZKEL H 4 {A_FaceTarget;A_SkelWhoosh;A_Recoil(-4.0);}
+		ZKEL I 3 A_CustomMeleeAttack(random(5,34),"skeleton/melee")
+		ZKEL F 2
+		ZKEL I 0 A_JumpIfCloser(63.0,"MeleeMirrored")
+		Goto See
+	MeleeMirrored:
+		ZKEL R 0 A_FaceTarget
+		ZKEL R 5
+		ZKEL S 4 {A_FaceTarget;A_SkelWhoosh;A_Recoil(-4.0);}
+		ZKEL T 3 A_CustomMeleeAttack(random(5,34),"skeleton/melee")
+		ZKEL C 2
+		Goto See
+	Heal:
+		ZKEL L 5 A_FaceTarget
+		ZKEL L 5 A_PlaySound("skeleton/active",CHAN_VOICE,1.0,false,0.9)
+		Goto See
+	Pain:
+		ZKEL L 5 A_Jump(31,"PlayDead")
+		ZKEL L 5 A_Pain
+		Goto See
+	Death:
+		ZKEL LM 7
+		ZKEL N 7 A_Scream
+		ZKEL O 7 A_NoBlocking
+		ZKEL P 7
+		ZKEL Q random(525,2100) CanRaise
+		ZKEL Q 1 A_Jump(143,"Reanimate")
+	Dead:
+		ZKEL Q -1
+		Stop
+	Reanimate:
+		ZKEL Q 0
+		{
+			if (A_SpawnItemEx("LDeadRiseChecker",0,0,0))
+				{return state(0);}
+			else
+				{return state("Dead");}
+		}
+		ZKEL P 5 A_PlaySound("vile/raise")
+		ZKEL ONM 5
+		TNT1 A 0 A_SpawnItemEx("R6Longdead",0,0,0,velx,vely,velz,angle,SXF_TRANSFERPOINTERS)
+		Stop
+	Raise:
+		ZKEL Q 5
+		ZKEL PONML 5
+		Goto See
+	}
+}
+
+ACTOR LDeadImage
+{
+	-SOLID
+	+NODAMAGE
+	+NODAMAGETHRUST
+	Scale 0.665
+	States
+	{
+	Spawn:
+		"####" "#" 3 NoDelay A_FadeOut(0.1)
+		Loop
+	}
+}
+
+ACTOR LDeadRiseChecker
+{
+	Radius 20
+	Height 56
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		Stop
+	}
+}
+
+ACTOR R6evenant : Revenant replaces Revenant
+{
+	Speed 15
+	Health 1280
+	States
+	{
+	Melee:
+		SKEL G 5 A_FaceTarget
+		SKEL H 4 A_SkelWhoosh
+		SKEL I 3 A_CustomMeleeAttack(random(5,54),"skeleton/melee")
+		SKEL F 2
+		Goto See
+		
+	}
+}
+
+ACTOR R6RevTrace : RevenantTracer replaces RevenantTracer
+{
+	Damage (random(20,119))
+}
+
+ACTOR R6Baron : BaronOfHell replaces BaronOfHell
+{
+	Speed 12
+	Health 4267
+	States
+	{
+	Melee:
+	Missile:
+		BOSS EF 8 A_FaceTarget
+		BOSS G 8 A_CustomComboAttack("R6BaronBall", 32, random(66,165), "baron/melee")
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6Knight : HellKnight replaces HellKnight
+{
+	Speed 12
+	Health 2133
+	States
+	{
+	Melee:
+	Missile:
+		BOS2 EF 8 A_FaceTarget
+		BOS2 G 8 A_CustomComboAttack("R6BaronBall", 32, random(66,165), "baron/melee")
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6BaronBall : BaronBall replaces BaronBall
+{
+	Damage(random(25,124))
+}
+
+ACTOR R6Fatty : Fatso replaces Fatso
+{
+	Speed 12
+	Health 2560
+	States
+	{
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6FatShot : FatShot replaces FatShot
+{
+	Damage (random(30,129))
+}
+
+ACTOR R6Vile : Archvile replaces Archvile
+{
+	PainChance 85
+	Health 2987
+	States
+	{
+	Missile:
+		VILE G 0 BRIGHT A_VileStart
+		VILE G 10 BRIGHT A_FaceTarget
+		VILE H 8 BRIGHT A_VileTarget
+		VILE IJKLMLMKN 7 BRIGHT A_FaceTarget
+		VILE N 20 BRIGHT A_VileAttack("vile/stop",20,70,70,3.3)
+		VILE O 4 BRIGHT
+		VILE P 4 BRIGHT
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}
+
+ACTOR R6Nazi : WolfensteinSS replaces WolfensteinSS
+{
+	Speed 12
+	DropItem "FragGrenAmmo", 32
+	DropItem "R6_Pistol_Spawner", 32
+	DropItem "mp5a4_pkup"
+	Health 100
+	AttackSound "weapons/mp5a4"
+	States
+	{
+	Missile:
+		SSWV E random(4,9) A_FaceTarget
+		SSWV F random(5,9) A_FaceTarget
+		SSWV G 1 BRIGHT A_CustomBulletAttack(11.3,5.6,1,random(5,37),"RSPuff",0,CBAF_NORANDOM)
+		SSWV G 1 BRIGHT
+		SSWV F 1 A_Jump(51,"See")
+		SSWV E 1 A_MonsterRefire(128,"See")
+		Goto Missile+2
+	Death:
+		TNT1 A 0 A_SpawnItemEx("shotStopper",0,0,0,velx,vely,velz)
+		goto super::Death
+	}
+}

@@ -1,0 +1,23 @@
+==== Special Weapons (R6W.PK3) ====
+========== by SidDoyle ============
+
+DECORATE
+	- SidDoyle
+Sprites
+	- Ubisoft [Raven Shield] (Weapon pickups)
+	- SidDoyle (Miscellaneous)
+	- JoeyTD (Pistol zombie)
+	- iD Software / 00_Zombie_00 (Unarmored revenant)
+Sounds
+	- Ubisoft [Raven Shield] (Weapon/misc. sounds)
+Graphics
+	- Ubisoft [Raven Shield] (Bullet chip)
+	- SidDoyle (Special forces status face)
+ACS
+	- SidDoyle
+	- Nash Muhandes (movetilt.acs)
+
+Special thanks to ZikShadow, Sgt. Shivers, Crudux Cruo, and
+the ZDoom forum community!
+
+This file was last updated: 12/30/2016

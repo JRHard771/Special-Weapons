@@ -1,0 +1,14 @@
+addkeysection "Special Weapons" SpecWeps
+
+addmenukey "Unload/Discard Weapon" +user1
+addmenukey "Select Firing Mode" +user2
+addmenukey "Sprint" +r6_sprint
+
+alias +wep_discard +user1;
+alias +wep_firemod +user2;
+alias +r6_sprint "pukename R6_SprintStart";
+alias -r6_sprint "pukename R6_SprintStop";
+
+defaultbind u +wep_discard
+defaultbind b +wep_firemod
+defaultbind x +r6_sprint

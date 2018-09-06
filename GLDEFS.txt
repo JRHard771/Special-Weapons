@@ -1,0 +1,607 @@
+pointlight ROCKET
+{
+    color 0.5 0.35 0.0
+    size 78
+}
+
+flickerlight ROCKET_X1
+{
+    color 0.5 0.35 0.0
+    size 90
+    secondarySize 101
+    chance 0.3
+}
+
+flickerlight ROCKET_X2
+{
+    color 0.25 0.05 0.0
+    size 112
+    secondarySize 123
+    chance 0.3
+}
+
+flickerlight ROCKET_X3
+{
+    color 0.15 0.0 0.0
+    size 134
+    secondarySize 146
+    chance 0.3
+}
+
+object R6CybRocket
+{
+    frame MISLA { light ROCKET    }
+
+    frame MISLB { light ROCKET_X1 }
+    frame MISLC { light ROCKET_X2 }
+    frame MISLD { light ROCKET_X3 }
+}
+
+// Zombies
+flickerlight2 ZOMBIEATK
+{
+    color 0.5 0.4 0.1
+    size 67
+    secondarySize 78
+    interval 1
+    offset 0 40 0
+}
+
+/*
+object R6ZombieMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object R6ShotgunGuy
+{
+    frame SPOSF { light ZOMBIEATK }
+}
+
+object R6ChaingunGuy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+*/
+
+object FS92Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object FN57Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object DE357Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object DE50Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object MK23Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object P228Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object SPPMan
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object USPMan
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object CZ61Man
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object MACMan
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object PUziMan
+{
+    frame MGPSF { light ZOMBIEATK }
+}
+
+object M12Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object MP510Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object MP5A4Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object MP5KMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object MTarMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object P90Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object SR2Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object TMPMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object UMPMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object UziMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object AK47Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object AK74Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object AugMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object FalMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object FamasMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object FncMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object G36KMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object G3A3Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object GalilMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object L8Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M14Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M16Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M4Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M82Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object TarMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object TypeMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object SsgMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object PsgMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object DragMan
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object Wa2Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M82A1Man
+{
+    frame POSSF { light ZOMBIEATK }
+}
+
+object M1Guy
+{
+    frame SPOSF { light ZOMBIEATK }
+}
+
+object Spas12Guy
+{
+    frame SPOSF { light ZOMBIEATK }
+}
+
+object Usas12Guy
+{
+    frame SPOSF { light ZOMBIEATK }
+}
+
+object E21Guy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+
+object E23Guy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+
+object M249Guy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+
+object M60Guy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+
+object RPDGuy
+{
+    frame CPOSE { light ZOMBIEATK }
+    frame CPOSF { light ZOMBIEATK }
+}
+
+// Doom Imp Fireball
+pointlight IMPBALL
+{
+    color 0.5 0.25 0.0
+    size 90
+}
+
+// Doom imp fireball explosion
+flickerlight IMPBALL_X1
+{
+    color 0.35 0.1 0.0
+    size 112
+    secondarySize 123
+    chance 0.25
+}
+
+flickerlight IMPBALL_X2
+{
+    color 0.2 0.0 0.0
+    size 134
+    secondarySize 146
+    chance 0.25
+}
+
+flickerlight IMPBALL_X3
+{
+    color 0.1 0.0 0.0
+    size 157
+    secondarySize 168
+    chance 0.25
+}
+
+object R6ImpBall
+{
+    frame BAL1A { light IMPBALL    }
+    frame BAL1B { light IMPBALL    }
+
+    frame BAL1C { light IMPBALL_X1 }
+    frame BAL1D { light IMPBALL_X2 }
+    frame BAL1E { light IMPBALL_X3 }
+}
+
+// Cacodemon fireball
+flickerlight CACOBALL
+{
+    color 0.5 0.1 0.3
+    size 78
+    secondarySize 90
+    chance 0.5
+}
+
+flickerlight CACOBALL_X1
+{
+    color 0.45 0.05 0.2
+    size 101
+    secondarySize 112
+    chance 0.25
+}
+
+flickerlight CACOBALL_X2
+{
+    color 0.3 0.0 0.05
+    size 123
+    secondarySize 134
+    chance 0.25
+}
+
+flickerlight CACOBALL_X3
+{
+    color 0.15 0.0 0.0
+    size 146
+    secondarySize 157
+    chance 0.25
+}
+
+object R6CacoBall
+{
+    frame BAL2A { light CACOBALL }
+    frame BAL2B { light CACOBALL }
+
+    frame BAL2C { light CACOBALL_X1 }
+    frame BAL2D { light CACOBALL_X2 }
+    frame BAL2E { light CACOBALL_X3 }
+}
+
+// Baron / Hell Knight fireball
+pointlight BARONBALL
+{
+    color 0.0 0.5 0.0
+    size 90
+}
+
+flickerlight BARONBALL_X1
+{
+    color 0.0 0.35 0.0
+    size 112
+    secondarySize 123
+    chance 0.25
+}
+
+flickerlight BARONBALL_X2
+{
+    color 0.0 0.2 0.0
+    size 134
+    secondarySize 146
+    chance 0.25
+}
+
+flickerlight BARONBALL_X3
+{
+    color 0.0 0.1 0.0
+    size 157
+    secondarySize 168
+    chance 0.25
+}
+
+object R6BaronBall
+{
+    frame BAL7A { light BARONBALL    }
+    frame BAL7B { light BARONBALL    }
+
+    frame BAL7C { light BARONBALL_X1 }
+    frame BAL7D { light BARONBALL_X2 }
+    frame BAL7E { light BARONBALL_X3 }
+}
+
+// Lost Soul
+flickerlight LOSTSOUL
+{
+    color 0.5 0.15 0.0
+    size 78
+    secondarysize 90
+    chance 0.1
+}
+
+flickerlight LOSTSOUL_X1
+{
+    color 0.4 0.15 0.0
+    size 101
+    secondarySize 112
+    chance 0.25
+}
+
+flickerlight LOSTSOUL_X2
+{
+    color 0.3 0.1 0.0
+    size 123
+    secondarySize 134
+    chance 0.25
+}
+
+flickerlight LOSTSOUL_X3
+{
+    color 0.2 0.05 0.0
+    size 146
+    secondarySize 157
+    chance 0.25
+}
+
+flickerlight LOSTSOUL_X4
+{
+    color 0.1 0.0 0.0
+    size 157
+    secondarySize 168
+    chance 0.25
+}
+
+object R6Soul
+{
+    frame SKULA { light LOSTSOUL    }
+    frame SKULB { light LOSTSOUL    }
+    frame SKULC { light LOSTSOUL    }
+    frame SKULD { light LOSTSOUL    }
+    frame SKULE { light LOSTSOUL    }
+    frame SKULF { light LOSTSOUL    }
+    frame SKULG { light LOSTSOUL    }
+
+    frame SKULH { light LOSTSOUL_X1 }
+    frame SKULI { light LOSTSOUL_X2 }
+    frame SKULJ { light LOSTSOUL_X3 }
+    frame SKULK { light LOSTSOUL_X4 }
+}
+
+// Mancubus Fireball
+object R6FatShot
+{
+    frame MANFA { light IMPBALL   }
+    frame MANFB { light IMPBALL   }
+
+    frame MISLB { light ROCKET_X1 }
+    frame MISLC { light ROCKET_X2 }
+    frame MISLD { light ROCKET_X3 }
+}
+
+// Arachnotron Fireball
+pointlight ARACHPLAS
+{
+    color 0.3 0.5 0.0
+    size 78
+}
+
+flickerlight ARACHPLAS_X1
+{
+    color 0.2 0.4 0.0
+    size 101
+    secondarySize 112
+    chance 0.3
+}
+
+flickerlight ARACHPLAS_X2
+{
+    color 0.3 0.3 0.0
+    size 123
+    secondarySize 134
+    chance 0.3
+}
+
+flickerlight ARACHPLAS_X3
+{
+    color 0.2 0.2 0.0
+    size 67
+    secondarySize 45
+    chance 0.3
+}
+
+flickerlight ARACHPLAS_X4
+{
+    color 0.1 0.1 0.0
+    size 34
+    secondarySize 22
+    chance 0.3
+}
+
+object R6Plasma
+{
+    frame APLSA { light ARACHPLAS }
+    frame APLSB { light ARACHPLAS }
+
+    frame APBXA { light ARACHPLAS_X1 }
+    frame APBXB { light ARACHPLAS_X2 }
+    frame APBXC { light ARACHPLAS_X2 }
+    frame APBXD { light ARACHPLAS_X3 }
+    frame APBXE { light ARACHPLAS_X4 }
+}
+
+// Revenant tracer
+pointlight TRACER
+{
+    color 0.5 0.15 0.0
+    size 67
+}
+
+flickerlight TRACER_X1
+{
+    color 0.5 0.1 0.0
+    size 90
+    secondarySize 101
+    chance 0.25
+}
+
+flickerlight TRACER_X2
+{
+    color 0.3 0.0 0.0
+    size 112
+    secondarySize 123
+    chance 0.25
+}
+
+flickerlight TRACER_X3
+{
+    color 0.15 0.0 0.0
+    size 134
+    secondarySize 146
+    chance 0.25
+}
+
+object R6RevTrace
+{
+    frame FATBA { light TRACER    }
+    frame FATBB { light TRACER    }
+
+    frame FBXPA { light TRACER_X1 }
+    frame FBXPB { light TRACER_X2 }
+    frame FBXPC { light TRACER_X3 }
+}
